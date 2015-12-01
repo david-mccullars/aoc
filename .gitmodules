@@ -1,0 +1,30 @@
+[submodule "2015"]
+	path = 2015
+	url = https://github.com/david-mccullars/aoc-2015.git
+[submodule "2016"]
+	path = 2016
+	url = https://github.com/david-mccullars/aoc-2016.git
+[submodule "2017"]
+	path = 2017
+	url = https://github.com/david-mccullars/aoc-2017.git
+[submodule "2018"]
+	path = 2018
+	url = https://github.com/david-mccullars/aoc-2018.git
+[submodule "2019"]
+	path = 2019
+	url = https://github.com/david-mccullars/aoc-2019.git
+[submodule "2020"]
+	path = 2020
+	url = https://github.com/david-mccullars/aoc-2020.git
+[submodule "2021"]
+	path = 2021
+	url = https://github.com/david-mccullars/aoc-2021.git
+[submodule "2022"]
+	path = 2022
+	url = https://github.com/david-mccullars/aoc-2022.git
+[submodule "2023"]
+	path = 2023
+	url = https://github.com/david-mccullars/aoc-2023.git
+[submodule "2024"]
+	path = 2024
+	url = https://github.com/david-mccullars/aoc-2024.git

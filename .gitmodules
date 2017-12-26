@@ -6,7 +6,7 @@
 	url = https://github.com/david-mccullars/aoc-2016
 [submodule "2017"]
 	path = 2017
-	url = https://github.com/david-mccullars/aoc-2017.git
+	url = https://github.com/david-mccullars/aoc-2017
 [submodule "2018"]
 	path = 2018
 	url = https://github.com/david-mccullars/aoc-2018.git

@@ -20,7 +20,7 @@ def input(day, suffix)
   AoC.handle_name(AoC.get_year, "DAY#{day}_#{suffix}") or abort "Invalid suffix #{suffix.inspect}"
 end
 
-def solve(suffix = :lines, examples = {})
+def solve(suffix = :lines, **examples)
   @letter = @letter ? (@letter.ord + 1).chr : 'A'
   puts "========================== #{@letter} =========================="
 
@@ -40,13 +40,13 @@ def solve(suffix = :lines, examples = {})
 end
 
 %i[lines text numbers number].each do |suffix|
-  define_method("solve_with_#{suffix}") do |*args, &block|
-    solve(suffix, *args, &block)
+  define_method("solve_with_#{suffix}") do |*args, **opts, &block|
+    solve(suffix, *args, **opts, &block)
   end
 end
 
-def solve_with_commands(allowed_commands, *args)
-  solve(*args) do |lines|
+def solve_with_commands(allowed_commands, *args, **opts)
+  solve(*args, **opts) do |lines|
     commands = lines.map do |line|
       if line =~ /^(#{allowed_commands.join('|')}) (\d+)$/
         [$1, $2.to_i]
@@ -58,14 +58,14 @@ def solve_with_commands(allowed_commands, *args)
   end
 end
 
-def solve_with_line_of_numbers(*args, &block)
-  solve(:text, *args) do |text|
+def solve_with_line_of_numbers(*args, **opts, &block)
+  solve(:text, *args, **opts) do |text|
     yield text.split(/\s*,\s*/).map(&:to_i)
   end
 end
 
-def solve_with(clazz, *args)
-  solve(*args) do |lines|
+def solve_with(clazz, *args, **opts)
+  solve(*args, **opts) do |lines|
     yield lines.map { |line| clazz.new(line) }
   end
 end

@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
-Dir['*.rb'].sort.each do |file|
+Dir['**/*.rb'].sort.each do |file|
   next if file.to_i.zero?
   code = File.read(file)
   next unless code =~ /solve/
   puts "\e[0;35m>>>>>>>>>>>>>>>>>>>>>>>>   \e[33m#{File.basename(file, '.rb')}   \e[35m>>>>>>>>>>>>>>>>>>>>>>>\e[0m"
-  Module.new.instance_eval(code, file, 0)
+  system("ruby #{file.inspect}")
   puts
 end

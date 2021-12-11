@@ -45,7 +45,7 @@ end
   end
 end
 
-def solve_commands(allowed_commands, *args)
+def solve_with_commands(allowed_commands, *args)
   solve(*args) do |lines|
     commands = lines.map do |line|
       if line =~ /^(#{allowed_commands.join('|')}) (\d+)$/
@@ -55,6 +55,12 @@ def solve_commands(allowed_commands, *args)
       end
     end
     yield commands
+  end
+end
+
+def solve_with_line_of_numbers(*args, &block)
+  solve(:text, *args) do |text|
+    yield text.split(/\s*,\s*/).map(&:to_i)
   end
 end
 

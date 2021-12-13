@@ -125,6 +125,12 @@ def solve_with_line_of_numbers(clazz: nil, **opts)
   end
 end
 
+def solve_with_grouped_lines(clazz: nil, **opts)
+  solve(:text, **opts) do |text|
+    yield classify(text.split(/\n\n/).map { |g| g.lines.map(&:chomp) }, clazz)
+  end
+end
+
 def solve_with_grid_of_numbers(clazz: nil, **opts)
   solve(**opts) do |lines|
     grid = {}

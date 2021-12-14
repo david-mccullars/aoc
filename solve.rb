@@ -1,5 +1,6 @@
 require 'bundler'
 require 'singleton'
+require 'set'
 Bundler.require
 
 # Kinda hacky, but we're going to capture the day when first loaded

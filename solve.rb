@@ -75,6 +75,25 @@ end
 
 #########################################################################
 
+Enumerable.module_eval do
+
+  def each_with_counter(default: 0, &block)
+    each_with_object(Hash.new { default }, &block)
+  end
+
+end
+
+Hash.class_eval do
+
+  def with_default(value)
+    self.default = value
+    self
+  end
+
+end
+
+#########################################################################
+
 def example(data, suffix)
   case suffix
   when :lines

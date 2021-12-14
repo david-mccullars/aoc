@@ -3,6 +3,23 @@ require_relative '../solve'
 EXAMPLE = <<-END
 END
 
+class Today
+
+  def initialize(lines)
+    @x = lines.map do |line|
+    end
+  end
+
+end
+
+solve_with(Today, EXAMPLE => -1) do |x|
+  x
+end
+
+solve_with(Today, EXAMPLE => -1) do |x|
+  x
+end
+
 __END__
 solve_with(Bingo, EXAMPLE => -1) do |bingo|
 solve_with_each(Wiring, EXAMPLE => -1) do |wirings|

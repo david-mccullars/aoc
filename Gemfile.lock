@@ -61,6 +61,7 @@ PLATFORMS
 DEPENDENCIES
   algorithms
   aoc!
+  dijkstra_fast
   lightly
   mechanize
   progressbar

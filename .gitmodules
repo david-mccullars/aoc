@@ -18,7 +18,7 @@
 	url = https://github.com/david-mccullars/aoc-2020
 [submodule "2021"]
 	path = 2021
-	url = https://github.com/david-mccullars/aoc-2021.git
+	url = https://github.com/david-mccullars/aoc-2021
 [submodule "2022"]
 	path = 2022
 	url = https://github.com/david-mccullars/aoc-2022.git

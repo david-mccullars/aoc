@@ -52,6 +52,8 @@ class SolutionPoster
       raise $1
     when /(That's the right answer[^\[<]*)/
       puts $1
+puts "========"
+File.write('/tmp/a', response.css("article").to_s)
     else
       raise response.css('article').to_s
     end

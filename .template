@@ -10,14 +10,24 @@ class Today
     end
   end
 
+  def first
+    @x
+    -10
+  end
+
+  def second
+    @x
+    -20
+  end
+
 end
 
 solve_with(Today, EXAMPLE => -1) do |x|
-  x
+  x.first
 end
 
 solve_with(Today, EXAMPLE => -1) do |x|
-  x
+  x.second
 end
 
 __END__

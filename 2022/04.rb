@@ -13,7 +13,7 @@ class AssignmentPair
 
   def initialize(line)
     @pairs = line.split(',').map do |pair|
-      Range.new(*pair.split('-'))
+      Range.new(*pair.split('-').map(&:to_i))
     end
   end
 

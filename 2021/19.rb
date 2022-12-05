@@ -171,7 +171,7 @@ class Scanner
     @id = id
     @delta = delta
     @coords = coords.strip.lines.map do |line|
-      Vector[*line.split(',').map(&:to_i)]
+      Vector[*line.split(',').map_i]
     end if coords.is_a?(String)
     @coords ||= coords
   end

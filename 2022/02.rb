@@ -12,7 +12,7 @@ class RockPaperScissorsTournament
 
   def initialize(lines)
     @strategy = lines.map do |line|
-      line.tr("ABCXYZ", "012012").split.map(&:to_i)
+      line.tr("ABCXYZ", "012012").split.map_i
     end
   end
 

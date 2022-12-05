@@ -1,5 +1,17 @@
 Enumerable.module_eval do
 
+  def map_i
+    map(&:to_i)
+  end
+
+  def map_s
+    map(&:to_s)
+  end
+
+  def map_sym
+    map(&:to_sym)
+  end
+
   def each_with_counter(default: 0, &block)
     each_with_object(Hash.new { default }, &block)
   end

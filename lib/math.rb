@@ -73,5 +73,5 @@ p [Math.tribonacci(3), Math.m_bonacci(3, 3), Math.variable_m_bonacci(*Array.new(
 p [Math.tribonacci(15), Math.m_bonacci(15, 3), Math.variable_m_bonacci(*Array.new(15) { 3 })]
 
 if ARGV.size > 0
-  p Math.variable_m_bonacci(*ARGV.map(&:to_i))
+  p Math.variable_m_bonacci(*ARGV.map_i)
 end

@@ -10,7 +10,7 @@ class PasswordPolicy
 
   def initialize(line)
     line =~ /^(\d+)-(\d+) ([a-z]): ([a-z]+)$/ or raise "Invalid input: #{line}"
-    @v1, @v2 = [$1, $2].map(&:to_i)
+    @v1, @v2 = [$1, $2].map_i
     @char, @password = [$3, $4]
   end
 

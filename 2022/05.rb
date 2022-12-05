@@ -29,9 +29,7 @@ class SupplyStacks
   end
 
   def parse_moves(text)
-    text.scan(/^move (\d+) from (\d+) to (\d+)/).map do |values|
-      values.map(&:to_i)
-    end
+    text.scan(/^move (\d+) from (\d+) to (\d+)/).map(&:map_i)
   end
 
   def operate!(mode:)

@@ -27,7 +27,7 @@ END
 class Bingo
 
   def initialize(lines)
-    @nums = lines.shift.split(',').map(&:to_i)
+    @nums = lines.shift.split(',').map_i
 
     @boards = lines.each_slice(6).map do |board|
       Board.new(board[1..-1])
@@ -55,7 +55,7 @@ class Board
 
   def initialize(lines)
     @numbers = lines.map do |line|
-      line.scan(/\d+/).map(&:to_i)
+      line.scan(/\d+/).map_i
     end
     unless @numbers.size == 5 && @numbers.map(&:size).uniq == [5]
       raise "Wrong board size: #{@numbers.inspect}"

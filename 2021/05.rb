@@ -17,7 +17,7 @@ class VentLine
 
   def initialize(line)
     raise "Invalid line #{line.inspect}" unless line =~ /^(\d+),(\d+) -> (\d+),(\d+)$/
-    @x1, @y1, @x2, @y2 = [$1, $2, $3, $4].map(&:to_i)
+    @x1, @y1, @x2, @y2 = [$1, $2, $3, $4].map_i
   end
 
   def diagonal?

@@ -22,7 +22,7 @@ def example(data, suffix)
   when :text
     data.chomp
   when :numbers
-    data.lines.map(&:to_i)
+    data.lines.map_i
   when :number
     data.lines.first.to_i
   else
@@ -69,7 +69,7 @@ end
 
 def solve_with_line_of_numbers(clazz: nil, **opts)
   solve(:text, **opts) do |text|
-    yield classify(text.split(/\s*,\s*/).map(&:to_i), clazz)
+    yield classify(text.split(/\s*,\s*/).map_i, clazz)
   end
 end
 

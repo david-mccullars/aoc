@@ -7,7 +7,7 @@ END
 class ProbeLauncher
 
   def initialize(line)
-    @x_min, @x_max, @y_min, @y_max = line.scan(/-?\d+/).map(&:to_i)
+    @x_min, @x_max, @y_min, @y_max = line.scan(/-?\d+/).map_i
     @x_range = @x_min .. @x_max
     @y_range = @y_min .. @y_max
     raise "y_range produces infinite solutions!" if @y_range.include?(0)

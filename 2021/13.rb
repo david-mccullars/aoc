@@ -30,7 +30,7 @@ class FoldedInstructions
     dot_input, fold_input = text.split(/\n\n/, 2)
 
     @dots = dot_input.lines.map do |line|
-      line.split(',', 2).map(&:to_i)
+      line.split(',', 2).map_i
     end
 
     @folds = fold_input.lines.map do |fold|

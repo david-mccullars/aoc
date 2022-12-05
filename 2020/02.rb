@@ -19,7 +19,7 @@ class PasswordPolicy
   end
 
   def position_valid?
-    [@v1 + 1, @v2 + 1].map { |v| @password[v] == @char }.reduce(&:^)
+    [@v1 - 1, @v2 - 1].map { |v| @password[v] == @char }.reduce(&:^)
   end
 
 end

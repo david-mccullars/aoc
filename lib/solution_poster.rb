@@ -2,12 +2,6 @@ class SolutionPoster
 
   include Singleton
 
-  attr_reader :part
-
-  def initialize
-    @part = 0
-  end
-
   def agent
     require "mechanize" unless defined?(Mechanize)
     @agent ||= Mechanize.new do |agent|
@@ -26,13 +20,13 @@ class SolutionPoster
     challenge_page.forms.first or raise "No form to post solution for day #{AoC.day}!"
   end
 
-  def solution_posted?
+  def solution_posted?(part)
     require "lightly" unless defined?(Lightly)
     Lightly.get("solution_posted_#{AoC.get_year}_#{AoC.day}_#{part}") do
       case part
-      when 1
+      when "A"
         !challenge_page.css('#part2').empty? || challenge_page.forms.empty?
-      when 2
+      when "B"
         challenge_page.forms.empty?
       else
         raise "Invalid part: #{part}"
@@ -40,9 +34,8 @@ class SolutionPoster
     end
   end
 
-  def post_solution(answer)
-    @part = @part + 1
-    return if solution_posted?
+  def post_solution(answer, part)
+    return if solution_posted?(part)
 
     challenge_form["answer"] = answer
     case (response = challenge_form.submit).css("article").to_s
@@ -54,6 +47,16 @@ class SolutionPoster
       puts $1
     else
       raise response.css('article').to_s
+    end
+  end
+
+  def accepted_solution(part)
+    accepted_solutions[part.ord - "A".ord]
+  end
+
+  def accepted_solutions
+    @accepted_solutions ||= challenge_page.css('main p').filter_map do |line|
+      line.css("code").text if line.text.start_with?("Your puzzle answer was")
     end
   end
 

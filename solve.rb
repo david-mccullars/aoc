@@ -51,7 +51,14 @@ def solve(suffix = :lines, clazz: nil, **examples)
 
   result = yield classify(input(suffix), clazz)
   puts "RESULT: #{result}", nil
-  SolutionPoster.instance.post_solution(result)
+
+  if already_accepted = SolutionPoster.instance.accepted_solution(@letter)
+    if already_accepted != result.to_s
+      abort "Accepted result (#{already_accepted}) no longer matches actual result (#{result.inspect})"
+    end
+  else
+    SolutionPoster.instance.post_solution(result, @letter) unless already_accepted
+  end
 end
 
 %i[lines text numbers number].each do |suffix|

@@ -19,21 +19,21 @@ class Chiton
 
   def initialize(grid)
     @grid = grid
+    @size = @tile_size = Math.sqrt(grid.size).to_i
+    abort "Grid is not square" unless @size ** 2 == grid.size
   end
 
   def expand!(factor:)
-    height, width = @grid.keys.sort.max.map { |i| i + 1 }
-    new_grid = {}
-    @grid.each do |(y, x), v|
-      factor.times do |i|
-        factor.times do |j|
-          v2 = ((v + i + j - 1) % 9) + 1
-          new_grid[[height * i + y, width * j + x]] = v2
-        end
-      end
-    end
-    @grid = new_grid
+    @size = @tile_size * factor
     self
+  end
+
+  def risk(y, x)
+    return unless (0...@size).include?(y)
+    return unless (0...@size).include?(x)
+
+    value = @grid[[y % @tile_size, x % @tile_size]]
+    ((value + (y / @tile_size) + (x / @tile_size) - 1) % 9) + 1
   end
 
   def adjacent(y, x)
@@ -47,13 +47,13 @@ class Chiton
 
   def connections(u)
     adjacent(*u).each do |v|
-      v_risk = @grid[v] or next
+      v_risk = risk(*v) or next
       yield v, v_risk
     end
   end
 
   def shortest
-    shortest_distance(*@grid.keys.minmax, progress: true)
+    shortest_distance([0, 0], [@size - 1, @size - 1], progress: true)
   end
 
 end

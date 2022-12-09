@@ -31,7 +31,7 @@ class RopeBridge
     @tail_positions = Set.new
   end
 
-  def simulate(knots:)
+  def simulate(knots:, display: false)
     rope = Array.new(knots) { Vector.zero(2) }
     @instructions.each do |dir, amount|
       amount.to_i.times do
@@ -39,6 +39,7 @@ class RopeBridge
         @tail_positions << rope.last
       end
     end
+    to_image(display)
     @tail_positions.size
   end
 
@@ -51,9 +52,25 @@ class RopeBridge
     end
   end
 
+  # For fun
+  def to_image(file)
+    return unless file
 
+    row_range, col_range = Matrix[*@tail_positions.to_a].transpose.to_a.map do |a|
+      Range.new(*a.minmax)
     end
 
+    require 'chunky_png'
+    png = ChunkyPNG::Image.new(col_range.size, row_range.size, ChunkyPNG::Color::BLACK)
+    @tail_positions.each_with_index do |knot, i|
+      x = knot[1] - col_range.begin
+      y = knot[0] - row_range.begin
+      blue = (255.0 * i / @tail_positions.size).to_i
+      red = @tail_positions.size - blue
+      #png[x, y] = ChunkyPNG::Color.rgba(red, 0, blue, 255)
+      png[x, y] = ChunkyPNG::Color.rgba(red, 0, 0, 125 + blue / 2)
+    end
+    png.save(file, interlace: true)
   end
 
 end
@@ -63,5 +80,6 @@ solve_with(RopeBridge, EXAMPLE1 => 13) do |bridge|
 end
 
 solve_with(RopeBridge, EXAMPLE2 => 36) do |bridge|
-  bridge.simulate(knots: 10)
+  d = ARGV.index('-d')
+  bridge.simulate(knots: 10, display: (ARGV[d + 1] if d))
 end

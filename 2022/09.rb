@@ -24,39 +24,36 @@ END
 
 class RopeBridge
 
+  MAX_KNOT_DISTANCE = Math.sqrt(2.0)
+
   def initialize(lines)
     @instructions = lines.map(&:split)
     @tail_positions = Set.new
   end
 
   def simulate(knots:)
-    rope = knots.times.map { [0, 0] }
+    rope = Array.new(knots) { Vector.zero(2) }
     @instructions.each do |dir, amount|
       amount.to_i.times do
-        adjust_rope(rope, dir)
-        @tail_positions << rope.last.dup
+        rope = adjust_rope(rope, dir)
+        @tail_positions << rope.last
       end
     end
     @tail_positions.size
   end
 
-  def adjust_rope(knots, dir)
-    knots[0] = knots[0].orthogonally_adjacent(dir)
-    knots.reduce do |k1, k2|
-      adjust_knot(k1, k2)
+  def adjust_rope(rope, dir)
+    adjusted_head = rope.shift.adjacent(dir)
+    rope.reduce([adjusted_head]) do |adjusted_rope, knot|
+      distance = adjusted_rope.last - knot
+      knot += distance.map { _1 <=> 0 } if distance.magnitude > MAX_KNOT_DISTANCE
+      adjusted_rope << knot
     end
   end
 
-  def adjust_knot(k1, k2)
-    dy = k1[0] - k2[0]
-    dx = k1[1] - k2[1]
 
-    if dy.abs > 1 || dx.abs > 1 # adjustment required
-      k2[0] += dy.negative? ? -1 : 1 unless dy.zero?
-      k2[1] += dx.negative? ? -1 : 1 unless dx.zero?
     end
 
-    k2
   end
 
 end

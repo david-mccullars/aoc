@@ -20,27 +20,14 @@ class Dumbo
     @flash_count = 0
   end
 
-  def adjacent(row, col)
-    [
-      [row-1, col-1],
-      [row-1, col],
-      [row-1, col+1],
-      [row, col-1],
-      [row, col],
-      [row, col+1],
-      [row+1, col-1],
-      [row+1, col],
-      [row+1, col+1],
-    ].select { |k| @levels.key?(k) }
-  end
-
   def step_once
     @levels = @levels.transform_values { |v| v + 1 }
     flashes = @levels.select { |k, v| v == 10 }.keys
     until flashes.empty?
       pos = flashes.pop
       @flash_count += 1
-      adjacent(*pos).each do |p2|
+      pos.neighborhood.each do |p2|
+        next unless @levels.key?(p2)
         @levels[p2] += 1
         flashes << p2 if @levels[p2] == 10
       end

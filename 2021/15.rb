@@ -36,17 +36,8 @@ class Chiton
     ((value + (y / @tile_size) + (x / @tile_size) - 1) % 9) + 1
   end
 
-  def adjacent(y, x)
-    [
-      [y + 1, x],
-      [y - 1, x],
-      [y, x + 1],
-      [y, x - 1],
-    ]
-  end
-
   def connections(u)
-    adjacent(*u).each do |v|
+    u.orthogonally_adjacent.each do |v|
       v_risk = risk(*v) or next
       yield v, v_risk
     end

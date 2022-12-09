@@ -12,17 +12,7 @@ END
 
 class ImageEnhancer
 
-  NEIGHBORHOOD = [
-    [-1, -1],
-    [0, -1],
-    [1, -1],
-    [-1, 0],
-    [0, 0],
-    [1, 0],
-    [-1, 1],
-    [0, 1],
-    [1, 1],
-  ]
+  NEIGHBORHOOD = %i[ul l dl u c d ur r dr] # order matters here
 
   def initialize(lines)
     algo, _, *grid = lines
@@ -43,15 +33,15 @@ class ImageEnhancer
   def each_pixel
     (@ymin - 2 .. @ymax + 2).each do |y|
       (@xmin - 2 .. @xmax + 2).each do |x|
-        yield x, y
+        yield [x, y]
       end
     end
   end
 
   def apply
     new_grid = {}
-    each_pixel do |x, y|
-      new_grid[[x, y]] = enhance(x, y)
+    each_pixel do |pixel|
+      new_grid[pixel] = enhance(pixel)
     end
     new_grid.default = enhance_the_void
     @grid = new_grid
@@ -63,11 +53,11 @@ class ImageEnhancer
     @algo[@grid[:void] ? 511 : 0]
   end
 
-  def enhance(x, y)
+  def enhance(pixel)
     idx = 0
-    NEIGHBORHOOD.each do |dx, dy|
+    pixel.adjacent(NEIGHBORHOOD).each do |pixel2|
       idx = idx << 1
-      idx += 1 if @grid[[x + dx, y + dy]]
+      idx += 1 if @grid[pixel2]
     end
     @algo[idx]
   end

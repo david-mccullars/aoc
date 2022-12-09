@@ -22,18 +22,9 @@ class HeightMap
     @heights[pos] >= EDGE_HEIGHT
   end
 
-  def adjacent(row, col)
-    [
-      [row-1, col],
-      [row, col-1],
-      [row, col+1],
-      [row+1, col],
-    ]
-  end
-
   def lowest_points
     @heights.select do |pos, height|
-      adjacent_heights = @heights.values_at(*adjacent(*pos))
+      adjacent_heights = @heights.values_at(*pos.orthogonally_adjacent)
       height < adjacent_heights.compact.min
     end
   end
@@ -43,7 +34,7 @@ class HeightMap
   end
 
   def basin_scan(pos, in_basin = Set.new)
-    adjacent(*pos).each do |p|
+    pos.orthogonally_adjacent.each do |p|
       next if in_basin.include?(p) || @heights.fetch(p, 9) == 9
       basin_scan(p, in_basin << p)
     end

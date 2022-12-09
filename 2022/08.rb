@@ -10,13 +10,7 @@ END
 
 class TallTrees
 
-  ADJACENT = {
-    down:   [1, 0],
-    up:     [-1, 0],
-    right:  [0, 1],
-    left:   [0, -1],
-  }
-  DIRECTIONS = ADJACENT.keys
+  DIRECTIONS = %i[up down left right].freeze
   EDGE = :EDGE
 
   def initialize(trees)
@@ -33,17 +27,11 @@ class TallTrees
 
   def add_sightline(tree, dir)
     (1..).each do |distance|
-      tree2 = adjacent(tree, dir, distance)
+      tree2 = tree.adjacent(dir, distance: distance)
       h, h2 = @trees.values_at(tree, tree2)
       @sightlines[tree][h2 ? dir : EDGE] += 1
       return if h2.nil? || h2 >= h
     end
-  end
-
-  def adjacent(tree, dir, distance)
-    y, x = tree
-    dy, dx = ADJACENT[dir]
-    [y + dy * distance, x + dx * distance]
   end
 
   def visible_from_edge

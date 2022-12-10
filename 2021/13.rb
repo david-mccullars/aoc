@@ -26,6 +26,8 @@ END
 
 class FoldedInstructions
 
+  include Display
+
   def initialize(text)
     dot_input, fold_input = text.split(/\n\n/, 2)
 
@@ -55,12 +57,15 @@ class FoldedInstructions
     @dots.size
   end
 
-  def to_s
-    output = Array.new(output_height) { ' ' * output_width }
+  def display
+    return @display if defined? @display
+
+    @display = Array.new(output_height) { OFF * (output_width + 1) }
     @dots.each do |x, y|
-      output[y][x] = "█"
+      @display[y][x] = ON
     end
-    output.join("\n")
+    @display = @display.join("\n")
+    @display
   end
 
   def output_width
@@ -80,7 +85,6 @@ end
 
 solve_with(FoldedInstructions, :text) do |instructions|
   instructions.fold_all
-  puts "\e[31m#{instructions}\e[0m"
-  warn "No automated solution.  Above must be typed in manually"
-  exit 0
+  puts instructions.fancy_display
+  instructions.parsed_display
 end

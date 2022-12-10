@@ -153,42 +153,39 @@ class CathodeRayTube
 
   include Display
 
-  def initialize(operations)
-    @operations = operations
-    @signals = process
-  end
-
-  def process(x = 1)
-    @operations.each_with_object([x]) do |line, signals|
-      if line =~ /addx (.+)/
-        signals << x
-        x += $1.to_i
-      end
-      signals << x
-    end.tap(&:pop)
+  def initialize(text)
+    @x_values = [1]
+    text.gsub("noop", "0")
+        .gsub(/addx (.*)/) { "0\n#{$1}" }
+        .split
+        .map_i
+        .each { @x_values << @x_values.last + _1 }
+    @x_values.pop
   end
 
   def signal_strengths
-    ((20...@signals.size) % 40).sum do |cycle|
-      cycle * @signals[cycle-1]
+    ((20...@x_values.size) % 40).sum do |cycle|
+      cycle * @x_values[cycle-1]
     end
   end
 
   def display
-    @display ||= @signals.each_slice(40).map do |signals|
-      signals.map.with_index do |x, i|
-        (x - i).abs <= 1 ? ON : OFF
-      end.join
+    @display ||= @x_values.each_slice(40).map do |values|
+      values.map.with_index(&PIXELFY).join
     end.join("\n")
+  end
+
+  PIXELFY = ->(x, i) do
+    (x - i).abs <= 1 ? ON : OFF
   end
 
 end
 
-solve_with(CathodeRayTube, EXAMPLE => 13140) do |crt|
+solve_with_text(clazz: CathodeRayTube, EXAMPLE => 13140) do |crt|
   crt.signal_strengths
 end
 
-solve_with(CathodeRayTube) do |crt|
+solve_with_text(clazz: CathodeRayTube) do |crt|
   puts crt.fancy_display
   crt.parsed_display
 end

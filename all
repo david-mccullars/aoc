@@ -4,6 +4,6 @@ Dir['**/*.rb'].sort.each do |file|
   code = File.read(file)
   next unless code =~ /solve/
   puts "\e[0;35m>>>>>>>>>>>>>>>>>>>>>>>>   \e[33m#{File.basename(file, '.rb')}   \e[35m>>>>>>>>>>>>>>>>>>>>>>>\e[0m"
-  system("ruby #{file.inspect}")
+  system("ruby #{file.inspect}") or exit 1
   puts
 end

@@ -21,4 +21,10 @@ Enumerable.module_eval do
     first
   end
 
+  def index_by
+    each_with_object({}) do |e, h|
+      h[yield(e)] = e
+    end
+  end
+
 end

@@ -80,11 +80,17 @@ def solve_with_grouped_lines(clazz: nil, **opts)
 end
 
 def solve_with_grid_of_numbers(clazz: nil, **opts)
+  solve_with_grid_of_letters(**opts) do |data|
+    yield classify(data.transform_values(&:to_i), clazz)
+  end
+end
+
+def solve_with_grid_of_letters(clazz: nil, **opts)
   solve(**opts) do |lines|
     grid = {}
     lines.each_with_index do |line, row|
       line.chars.each_with_index do |c, col|
-        grid[[row, col]] = c.to_i
+        grid[[row, col]] = c
       end
     end
     yield classify(grid, clazz)

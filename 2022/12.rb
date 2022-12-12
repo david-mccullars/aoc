@@ -12,6 +12,7 @@ END
 class HillClimbing
 
   include DijkstraFast::ShortestPath
+  include ImageHelper
 
   def initialize(grid)
     grid[@start = grid.key('S')] = 'a'
@@ -25,18 +26,46 @@ class HillClimbing
     end
   end
 
-  def shortest_from_start
-    shortest_distance(@start, @end)
+  def shortest
+    distance, path = shortest_path(@start, @end)
+    to_image(path)
+    distance
   end
 
   def overall_shortest
     possible_starts = @grid.select { |_, v| v.zero? }.keys
-    Parallel.map(possible_starts, in_processes: 16, progress: true) do |alt_start|
+    show_progress = possible_starts.size > 10
+    Parallel.map(possible_starts, progress: show_progress) do |alt_start|
       shortest_distance(alt_start, @end) rescue Float::INFINITY
     end.min
   end
 
+  # For fun
+  def to_image(path)
+    d = ARGV.index("-d")
+    file = ARGV[d + 1] if d
+    return unless file
+
+    image = overlay_images(
+      expand_image(
+        grid_to_pixels(@grid.transform_values { |h| Colors::TERRAIN.fetch(h) }),
+        factor: 9,
+      ),
+      expand_image(
+        path_to_pixels(path.map { |y, x| [y * 3, x * 3] }),
+        factor: 3,
+      ),
+    )
+
+    render_image(image, file: file)
+  end
+
 end
 
-solve_with_grid_of_letters(clazz: HillClimbing, EXAMPLE => 31, &:shortest_from_start)
-solve_with_grid_of_letters(clazz: HillClimbing, EXAMPLE => 29, &:overall_shortest)
+solve_with_grid_of_letters(clazz: HillClimbing, EXAMPLE => 31) do |hill|
+  hill.shortest
+end
+
+solve_with_grid_of_letters(clazz: HillClimbing, EXAMPLE => 29) do |hill|
+  hill.overall_shortest
+end

@@ -32,47 +32,37 @@ END
 
 class Monkey
 
+  extend HasFormat
+
+  has_format <<~MONKEY
+    Monkey {{i:id}}:
+      Starting items: {{csv:items}}
+      Operation: new = old {{operator}} {{operand}}
+      Test: divisible by {{i:divisor}}
+        If true: throw to monkey {{i:throw_when_true}}
+        If false: throw to monkey {{i:throw_when_false}}
+  MONKEY
+
   attr_reader :id, :inspections, :divisor
 
-  def initialize(text, game)
-    @game = game
+  def initialize
     @inspections = 0
-    @pass_rules = {}
-
-    text.lines.each do |line|
-      case line
-      when /Monkey (\d+):/
-        @id = $1.to_i
-      when /Starting items: (.*)/
-        @items = $1.split(/,\s*/).map_i
-      when /Operation: new = (.*)/
-        @operation = $1.strip
-      when /Test: divisible by (.*)/
-        @divisor = $1.to_i
-      when /If (true|false): throw to monkey (.*)/
-        @pass_rules[$1 == "true"] = $2.to_i
-      end
-    end
   end
 
-  def inspect_items!
+  def inspect_each_item
     @inspections += @items.size
     @items.each do |i|
-      i = inspect(i)
-      @game.pass(i, to: pass_recipient(i))
+      yield operate(i)
     end
     @items = []
   end
 
-  def inspect(i)
-    # Unprotected eval - what could go wrong?!? SHIPIT!!!
-    i = eval @operation.gsub("old", i.to_s)
-    i = i / 3 if @game.relief
-    i % @game.modulo
+  def operate(i)
+    i.send(@operator, @operand == "old" ? i : @operand.to_i)
   end
 
   def pass_recipient(i)
-    @pass_rules[i % @divisor == 0]
+    i % @divisor == 0 ? @throw_when_true : @throw_when_false
   end
 
   def receive(i)
@@ -83,41 +73,48 @@ end
 
 class MonkeyInTheMiddle
 
-  attr_reader :relief
+  extend HasFormat
 
-  def initialize(text)
-    @monkeys = text.split("\n\n").map do |section|
-      Monkey.new(section, self)
-    end.index_by(&:id)
+  has_format [Monkey]
+
+  def initialize(monkeys)
+    @monkeys = monkeys
     @relief = true
+    @modulo ||= monkeys.map(&:divisor).reduce(&:*)
   end
 
-  def with_no_relief
+  def without_relief
     @relief = false
     self
   end
 
   def play(rounds:)
     1.upto(rounds) do
-      @monkeys.values.each(&:inspect_items!)
+      @monkeys.each do |monkey|
+        monkey.inspect_each_item do |item|
+          item = adjust_worry(item)
+          pass(item, to: monkey.pass_recipient(item))
+        end
+      end
     end
-    @monkeys.values.map(&:inspections).max(2).reduce(&:*)
+    @monkeys.map(&:inspections).max(2).reduce(&:*)
+  end
+
+  def adjust_worry(item)
+    item /= 3 if @relief
+    item % @modulo
   end
 
   def pass(item, to:)
-    @monkeys.fetch(to).receive(item)
-  end
-
-  def modulo
-    @modulo ||= @monkeys.values.map(&:divisor).reduce(&:*)
+    @monkeys[to].receive(item)
   end
 
 end
 
-solve_with_text(clazz: MonkeyInTheMiddle, EXAMPLE => 10605) do |monkeys|
+solve_with_format(MonkeyInTheMiddle, EXAMPLE => 10605) do |monkeys|
   monkeys.play(rounds: 20)
 end
 
-solve_with_text(clazz: MonkeyInTheMiddle, EXAMPLE => 2713310158) do |monkeys|
-  monkeys.with_no_relief.play(rounds: 10_000)
+solve_with_format(MonkeyInTheMiddle, EXAMPLE => 2713310158) do |monkeys|
+  monkeys.without_relief.play(rounds: 10_000)
 end

@@ -97,6 +97,17 @@ def solve_with_grid_of_letters(clazz: nil, **opts)
   end
 end
 
+def solve_with_format(clazz, **opts)
+  case clazz
+  when HasFormat, HasFormat::Parser
+    solve(:text, **opts) do |text|
+      yield clazz.parse(text)
+    end
+  else
+    raise ArgumentError, "Class #{clazz} can not be parsed by format"
+  end
+end
+
 def solve_with(clazz, *args, **opts)
   solve(*args, **opts) do |data|
     yield classify(data, clazz)

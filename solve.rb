@@ -49,8 +49,10 @@ def solve(suffix = :lines, clazz: nil, **examples)
     end
   end
 
+  start_time = Time.now.to_f
   result = yield classify(input(suffix), clazz)
-  puts "RESULT: #{result}", nil
+  duration = (Time.now.to_f - start_time) * 1000.0
+  puts "RESULT: #{result} (#{duration.round(2)} ms)", nil
 
   if already_accepted = SolutionPoster.instance.accepted_solution(@letter)
     if already_accepted != result.to_s

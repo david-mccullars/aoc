@@ -5,60 +5,61 @@ EXAMPLE = <<-END
 503,4 -> 502,4 -> 502,9 -> 494,9
 END
 
+Array.class_eval do
+  alias :x :first
+  alias :y :last
+end
+
 class RegolithReservoir
 
   SAND_SOURCE = [500, 0]
-
-  ROCK = '#'
-  SAND = 'o'
 
   def initialize(lines)
     @grid = {}
 
     lines.map do |line|
       line.scan(/\d+/).map_i.each_slice(2).each_cons(2).map do |p1, p2|
-        fill(p1, p2, ROCK)
+        fill_with_rock(p1, p2)
       end
     end
 
-    @rock_bottom = @grid.keys.map(&:last).max
+    @rock_bottom = @grid.keys.map(&:y).max
   end
 
-  def fill(p1, p2, value)
-    Range.new(*[p1.first, p2.first].sort).each do |x|
-      Range.new(*[p1.last, p2.last].sort).each do |y|
-        @grid[[x, y]] = value
-      end
-    end
-  end
-
-  def add_floor(distance:)
+  def with_floor(distance:)
     @floor = @rock_bottom + distance
     self
   end
 
-  def drop_sand
-    (0..).detect { !drop_one_sand }
-  end
-
-  def drop_one_sand
-    tile = SAND_SOURCE
-
-    until sand_clogged? || into_the_abyss?(tile)
-      empty_tile = adjacent(tile).detect { |t| @grid[t].nil? }
-
-      if empty_tile && !at_floor?(empty_tile)
-        tile = empty_tile # Keep dropping
-      else
-        @grid[tile] = SAND
-        return :added
+  def fill_with_rock(p1, p2)
+    (p1.x .. p2.x).abs.each do |x|
+      (p1.y .. p2.y).abs.each do |y|
+        @grid[[x, y]] = :rock
       end
     end
   end
 
-  def adjacent(tile)
+  def fill_with_sand
+    tile_stack = [SAND_SOURCE]
+
+    until sand_clogged? || into_the_abyss?(tile_stack.last)
+      empty_tile = next_empty_tile(tile_stack.last)
+
+      if empty_tile && !at_floor?(empty_tile)
+        tile_stack << empty_tile
+      else
+        @grid[tile_stack.pop] = :sand
+      end
+    end
+
+    @grid.values.grep(:sand).size
+  end
+
+  def next_empty_tile(tile)
     x, y = tile
-    [[x, y+1], [x-1, y+1], [x+1, y+1]]
+    [[x, y+1], [x-1, y+1], [x+1, y+1]].detect do |tile2|
+      @grid[tile2].nil?
+    end
   end
 
   def sand_clogged?
@@ -66,19 +67,19 @@ class RegolithReservoir
   end
 
   def into_the_abyss?(tile)
-    !@floor && tile.last >= @rock_bottom
+    !@floor && tile.y >= @rock_bottom
   end
 
   def at_floor?(tile)
-    @floor == tile.last
+    @floor == tile.y
   end
 
 end
 
 solve_with(RegolithReservoir, EXAMPLE => 24) do |reservoir|
-  reservoir.drop_sand
+  reservoir.fill_with_sand
 end
 
 solve_with(RegolithReservoir, EXAMPLE => 93) do |reservoir|
-  reservoir.add_floor(distance: 2).drop_sand
+  reservoir.with_floor(distance: 2).fill_with_sand
 end

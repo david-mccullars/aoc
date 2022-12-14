@@ -1,5 +1,9 @@
 Range.class_eval do
 
+  def abs
+    self.begin <= self.end ? self : Range.new(self.end, self.begin)
+  end
+
   def intersection(range)
     raise TypeError, "no implicit conversion of #{range.class} into Range" unless range.is_a?(Range)
 

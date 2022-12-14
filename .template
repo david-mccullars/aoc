@@ -1,7 +1,10 @@
 require_relative '../solve'
 
 EXAMPLE = <<-END
+
 END
+V1 = -1
+V2 = -2
 
 class Today
 
@@ -22,11 +25,11 @@ class Today
 
 end
 
-solve_with(Today, EXAMPLE => -1) do |x|
+solve_with(Today, EXAMPLE => V1) do |x|
   x.first
 end
 
-solve_with(Today, EXAMPLE => -1) do |x|
+solve_with(Today, EXAMPLE => V2) do |x|
   x.second
 end
 

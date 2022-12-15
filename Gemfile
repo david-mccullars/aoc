@@ -6,6 +6,7 @@ gem 'algorithms'
 gem 'aoc', github: 'catlee/aoc-ruby'
 gem 'dijkstra_fast'
 gem 'lightly', require: false
+gem 'facets', require: false
 gem 'mechanize', require: false
 gem 'sqlite3'
 gem 'parallel', require: false

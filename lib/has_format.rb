@@ -64,15 +64,17 @@ module HasFormat
   class RegexpParser < Parser
 
     TYPE_REGEXP_MAPPING = {
-       i:   /\d+/,
-       s:   /\S+/,
-       csv: /[0-9, ]+/,
+       i:    /\d+/,
+       s:    /\S+/,
+       csvi: /[0-9, ]+/,
+       csv:  /[^\s,]+(?:,\s*[^\s,]+)*/,
     }
 
     TYPE_VALUE_MAPPING = {
-      i:   ->(v) { v&.to_i },
-      s:   ->(v) { v },
-      csv: ->(v) { v&.split(/,\s*/)&.map(&:to_i) },
+      i:    ->(v) { v&.to_i },
+      s:    ->(v) { v },
+      csvi: ->(v) { v&.split(/,\s*/)&.map(&:to_i) },
+      csv:  ->(v) { v&.split(/,\s*/) },
     }
 
     def initialize(format, clazz: nil)
@@ -99,7 +101,7 @@ module HasFormat
       if @clazz.nil?
         values
       elsif @clazz < Struct
-        @clazz.new(values.values_at(*@clazz.members))
+        @clazz.new(*values.values_at(*@clazz.members))
       else
         @clazz.allocate.tap do |obj|
           values.each do |k, v|
@@ -146,6 +148,8 @@ module HasFormat
         @nested = nested.parser
       when Parser
         @nested = nested
+      when String, Regexp
+        @nested = RegexpParser.new(nested)
       else
         raise ArgumentError, "ArrayParser must accept HasFormat or another Parser"
       end

@@ -98,8 +98,6 @@ class Blueprint
     @max_geode = 0
     check_options(State.new(minutes, Resources[], ROBOTS.ore))
     @max_geode
-  ensure
-    #check_options_stats
   end
 
   def check_options(state)

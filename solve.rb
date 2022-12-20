@@ -35,7 +35,13 @@ def input(suffix)
 end
 
 def classify(data, clazz)
-  clazz ? clazz.new(data) : data
+  clazz ? mark_example(clazz.new(data), data) : data
+end
+
+def mark_example(obj, source = nil)
+  is_example = source.nil? || source.instance_variable_get(:@is_example)
+  obj.instance_variable_set(:@is_example, is_example) if is_example
+  obj
 end
 
 def solve(suffix = :lines, clazz: nil, **examples)
@@ -43,7 +49,7 @@ def solve(suffix = :lines, clazz: nil, **examples)
   puts "========================== #{@letter} =========================="
 
   examples.each do |input, expected_result|
-    actual_result = yield classify(example(input, suffix), clazz)
+    actual_result = yield mark_example(classify(example(input, suffix), clazz))
     if expected_result != actual_result
       abort "Expected result (#{expected_result}) does not equal actual result (#{actual_result.inspect})"
     end
@@ -103,7 +109,12 @@ def solve_with_format(clazz, **opts)
   case clazz
   when HasFormat, HasFormat::Parser
     solve(:text, **opts) do |text|
-      yield clazz.parse(text)
+      yield mark_example(clazz.parse(text), text)
+    end
+  when Array
+    solve(:text, **opts) do |text|
+      parser = HasFormat::ArrayParser.new(*clazz)
+      yield mark_example(parser.parse(text), text)
     end
   else
     raise ArgumentError, "Class #{clazz} can not be parsed by format"

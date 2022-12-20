@@ -13,7 +13,7 @@ END
 # Like The Highlander, there can only be one!
 class UniqueWrapper
 
-  attr_accessor :value
+  attr_reader :value
 
   def initialize(value)
     @value = value
@@ -23,47 +23,35 @@ end
 
 class GrovePositioningSystem
 
-  DECRYPTION_KEY = 811589153
-
   def initialize(numbers)
-    @numbers = numbers.map { |n| UniqueWrapper.new(n) }
-    @mixed = @numbers.dup
-    @zero = @numbers[numbers.index(0)]
+    @numbers = numbers
   end
 
-  def apply_decryption_key
-    @numbers.each do |n|
-      n.value *= DECRYPTION_KEY
-    end
-    self
-  end
+  def mix(times = 1.times, decryption_key: 1)
+    base = @numbers.map { UniqueWrapper.new(_1 * decryption_key) }
 
-  def mix(times = 1.times)
+    mixed = base.dup
     times.each do
-      @numbers.each do |unique|
-        i = @mixed.index(unique)
-        @mixed.rotate!(i)
-        @mixed.shift
-        @mixed.rotate!(unique.value)
-        @mixed.unshift(unique)
+      base.each do |unique|
+        index = mixed.index(unique)
+        mixed.delete_at(index)
+        new_index = (index + unique.value) % mixed.size
+        mixed.insert(new_index, unique)
       end
     end
-    self
-  end
 
-  def grove_coordinate_sum
-    zero_idx = @mixed.index(@zero)
+    zero = mixed.index { |u| u.value == 0 }
     [1000, 2000, 3000].map do |offset|
-      @mixed[(zero_idx + offset) % @mixed.size].value
+      mixed[(zero + offset) % mixed.size].value
     end.sum
   end
 
 end
 
 solve_with_numbers(clazz: GrovePositioningSystem, EXAMPLE => 3) do |gps|
-  gps.mix.grove_coordinate_sum
+  gps.mix
 end
 
 solve_with_numbers(clazz: GrovePositioningSystem, EXAMPLE => 1623178306) do |gps|
-  gps.apply_decryption_key.mix(10.times).grove_coordinate_sum
+  gps.mix(10.times, decryption_key: 811589153)
 end

@@ -36,7 +36,7 @@ class Monkey
 
   has_format <<~MONKEY
     Monkey {{i:id}}:
-      Starting items: {{csv:items}}
+      Starting items: {{csvi:items}}
       Operation: new = old {{operator}} {{operand}}
       Test: divisible by {{i:divisor}}
         If true: throw to monkey {{i:throw_when_true}}

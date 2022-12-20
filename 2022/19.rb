@@ -6,68 +6,41 @@ Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsid
 Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.
 END
 
-module Resources
+class Resources < Struct.new(:ore, :clay, :obsidian, :geode)
 
   ORE       = 0
   CLAY      = 1
   OBSIDIAN  = 2
   GEODE     = 3
 
-  def ore;      self[ORE]; end
-  def clay;     self[CLAY]; end
-  def obsidian; self[OBSIDIAN]; end
-  def geode;    self[GEODE]; end
-
   def Resources.[](ore: 0, clay: 0, obsidian: 0, geode: 0)
-    [ore, clay, obsidian, geode]
+    new(ore, clay, obsidian, geode)
   end
 
-  def add(other)
-    [
-      self[ORE] + other[ORE],
-      self[CLAY] + other[CLAY],
-      self[OBSIDIAN] + other[OBSIDIAN],
-      self[GEODE] + other[GEODE],
-    ]
+  def +(other)
+    Resources.new(*values.zip(other.values).map { |v1, v2| v1 + v2 })
   end
 
-  def minus(other)
-    [
-      self[ORE] - other[ORE],
-      self[CLAY] - other[CLAY],
-      self[OBSIDIAN] - other[OBSIDIAN],
-      self[GEODE] - other[GEODE],
-    ]
+  def -(other)
+    Resources.new(*values.zip(other.values).map { |v1, v2| v1 - v2 })
   end
 
   def >=(other)
-    self[ORE] >= other[ORE] &&
-    self[CLAY] >= other[CLAY] &&
-    self[OBSIDIAN] >= other[OBSIDIAN] &&
-    self[GEODE] >= other[GEODE]
+    values.zip(other.values).all? { |v1, v2| v1 >= v2 }
   end
 
 end
 
-ROBOTS = [
-  Resources[ore: 1],
-  Resources[clay: 1],
-  Resources[obsidian: 1],
-  Resources[geode: 1],
-]
+######################################################################
 
-module State
-
-  def minutes;    self[0]; end
-  def resources;  self[1]; end
-  def production; self[2]; end
+class State < Struct.new(:minutes, :resources, :production)
 
   def produce
-    [minutes - 1, resources.add(production), production]
+    State.new(minutes - 1, resources + production, production)
   end
 
-  def build(robot_type, cost)
-    [minutes, resources.minus(cost), production.add(ROBOTS[robot_type])]
+  def add_production(cost, new_production)
+    State.new(minutes, resources - cost, production + new_production)
   end
 
   def max_geode_possible
@@ -76,8 +49,7 @@ module State
 
 end
 
-Array.send(:include, Resources)
-Array.send(:include, State)
+######################################################################
 
 class Blueprint
 
@@ -91,6 +63,13 @@ class Blueprint
       Each obsidian robot costs {{i:obsidian1}} ore and {{i:obsidian2}} clay.
       Each geode robot costs {{i:geode1}} ore and {{i:geode2}} obsidian.
   END
+
+  ROBOTS = [
+    Resources[ore: 1],
+    Resources[clay: 1],
+    Resources[obsidian: 1],
+    Resources[geode: 1],
+  ]
 
   attr_reader :id
 
@@ -110,9 +89,13 @@ class Blueprint
     ]
   end
 
-  def max_geode(minutes)
+  def quality
+    id * max_geode(24)
+  end
+
+  def max_geode(minutes = 32)
     @max_geode = 0
-    start = [minutes, Resources[], ROBOTS[Resources::ORE]]
+    start = State.new(minutes, Resources[], ROBOTS[Resources::ORE])
     check_options(start)
     @max_geode
   end
@@ -137,7 +120,7 @@ class Blueprint
       # enough of a given resource to buy whatever we need.
       next if state.production[robot_type] >= @max_necessary[robot_type]
 
-      check_options(next_state.build(robot_type, cost))
+      check_options(next_state.add_production(cost, ROBOTS[robot_type]))
 
       # Optimization: If we have an option to build a high value robot
       # assume that is always the best option and ignore other build
@@ -152,22 +135,18 @@ class Blueprint
     return if state.resources.ore >= @max_necessary[Resources::ORE]
 
     check_options(next_state)
-
-    nil
   end
 
   memoize :check_options
 
 end
 
+######################################################################
+
 solve_with_format([Blueprint], EXAMPLE => 33) do |blueprints|
-  Parallel.map(blueprints) do |b|
-    b.max_geode(24) * b.id
-  end.sum
+  Parallel.map(blueprints, &:quality).sum
 end
 
 solve_with_format([Blueprint]) do |blueprints|
-  Parallel.map(blueprints.first(3)) do |b|
-    b.max_geode(32)
-  end.reduce(:*)
+  Parallel.map(blueprints.first(3), &:max_geode).reduce(:*)
 end

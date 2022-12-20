@@ -8,11 +8,6 @@ END
 
 class Resources < Struct.new(:ore, :clay, :obsidian, :geode)
 
-  ORE       = 0
-  CLAY      = 1
-  OBSIDIAN  = 2
-  GEODE     = 3
-
   def Resources.[](ore: 0, clay: 0, obsidian: 0, geode: 0)
     new(ore, clay, obsidian, geode)
   end
@@ -27,6 +22,13 @@ class Resources < Struct.new(:ore, :clay, :obsidian, :geode)
 
   def >=(other)
     values.zip(other.values).all? { |v1, v2| v1 >= v2 }
+  end
+
+  def each
+    yield :geode, geode
+    yield :obsidian, obsidian
+    yield :clay, clay
+    yield :ore, ore
   end
 
 end
@@ -53,7 +55,6 @@ end
 
 class Blueprint
 
-  extend WithMemoizedMethods
   extend HasFormat
 
   has_format <<~END.strip.gsub(/\s+/, " ")
@@ -64,29 +65,29 @@ class Blueprint
       Each geode robot costs {{i:geode1}} ore and {{i:geode2}} obsidian.
   END
 
-  ROBOTS = [
+  ROBOTS = Resources.new(
     Resources[ore: 1],
     Resources[clay: 1],
     Resources[obsidian: 1],
     Resources[geode: 1],
-  ]
+  )
 
   attr_reader :id
 
   def initialize
-    @build_costs = {
-      Resources::GEODE =>    Resources[ore: @geode1, obsidian: @geode2],
-      Resources::OBSIDIAN => Resources[ore: @obsidian1, clay: @obsidian2],
-      Resources::CLAY =>     Resources[ore: @clay],
-      Resources::ORE =>      Resources[ore: @ore],
-    }
+    @build_costs = Resources.new(
+      Resources[ore: @ore],
+      Resources[ore: @clay],
+      Resources[ore: @obsidian1, clay: @obsidian2],
+      Resources[ore: @geode1, obsidian: @geode2],
+    )
 
-    @max_necessary = [
+    @max_necessary = Resources.new(
       @build_costs.values.map(&:ore).max,
       @build_costs.values.map(&:clay).max,
       @build_costs.values.map(&:obsidian).max,
       Float::INFINITY,
-    ]
+    )
   end
 
   def quality
@@ -95,9 +96,10 @@ class Blueprint
 
   def max_geode(minutes = 32)
     @max_geode = 0
-    start = State.new(minutes, Resources[], ROBOTS[Resources::ORE])
-    check_options(start)
+    check_options(State.new(minutes, Resources[], ROBOTS.ore))
     @max_geode
+  ensure
+    #check_options_stats
   end
 
   def check_options(state)
@@ -126,18 +128,16 @@ class Blueprint
       # assume that is always the best option and ignore other build
       # options. This WILL fail in some cases (in partciular the example)
       # but seems to works with the real input.
-      break if robot_type >= Resources::OBSIDIAN
+      break if %i[geode obsidian].include?(robot_type)
     end
 
     # Optimization: If we had enough ore to buy anything we want,
     # then we should have built something - no need to consider a
     # "produce only" option.
-    return if state.resources.ore >= @max_necessary[Resources::ORE]
+    return if state.resources.ore >= @max_necessary.ore
 
     check_options(next_state)
   end
-
-  memoize :check_options
 
 end
 

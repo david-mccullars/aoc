@@ -1,13 +1,14 @@
 source 'https://rubygems.org'
 
-ruby '3.0.3'
+ruby '>= 3.1.0'
 
 gem 'algorithms'
 gem 'aoc', github: 'catlee/aoc-ruby'
 gem 'dijkstra_fast'
 gem 'lightly', require: false
 gem 'facets', require: false
-gem 'mechanize', require: false
+gem 'matrix', require: false
+gem 'mechanize'
 gem 'sqlite3'
 gem 'parallel', require: false
 gem 'progressbar', require: false

@@ -1,6 +1,9 @@
 package enum
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestMax_Int(t *testing.T) {
 	tests := []struct {
@@ -39,6 +42,50 @@ func TestMax_Int(t *testing.T) {
 			got := Max(tt.items)
 			if got != tt.want {
 				t.Errorf("Max = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMaxN_Int(t *testing.T) {
+	tests := []struct {
+		name  string
+		items []int
+		want  []int
+	}{
+		{
+			name: "no items",
+			want: []int{},
+		},
+		{
+			name:  "one item",
+			items: []int{-1},
+			want:  []int{-1},
+		},
+		{
+			name:  "max at start",
+			items: []int{10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1},
+			want:  []int{8, 9, 10},
+		},
+		{
+			name:  "max at end",
+			items: []int{-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+			want:  []int{8, 9, 10},
+		},
+		{
+			name:  "max at middle",
+			items: []int{0, 1, 2, 3, 4, 10, 5, 6, 7, 8, 9, -1},
+			want:  []int{8, 9, 10},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := MaxN(tt.items, 3)
+			if len(got) == 0 && len(tt.want) == 0 {
+				// pass
+			} else if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MaxN = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -123,6 +170,50 @@ func TestMin_Int(t *testing.T) {
 			got := Min(tt.items)
 			if got != tt.want {
 				t.Errorf("Min = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMinN_Int(t *testing.T) {
+	tests := []struct {
+		name  string
+		items []int
+		want  []int
+	}{
+		{
+			name: "no items",
+			want: []int{},
+		},
+		{
+			name:  "one item",
+			items: []int{-1},
+			want:  []int{-1},
+		},
+		{
+			name:  "max at start",
+			items: []int{10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1},
+			want:  []int{1, 0, -1},
+		},
+		{
+			name:  "max at end",
+			items: []int{-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+			want:  []int{1, 0, -1},
+		},
+		{
+			name:  "max at middle",
+			items: []int{0, 1, 2, 3, 4, 10, 5, 6, 7, 8, 9, -1},
+			want:  []int{1, 0, -1},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := MinN(tt.items, 3)
+			if len(got) == 0 && len(tt.want) == 0 {
+				// pass
+			} else if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MinN = %v, want %v", got, tt.want)
 			}
 		})
 	}

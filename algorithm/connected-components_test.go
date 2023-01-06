@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gmlewis/advent-of-code-2021/enum"
+	"github.com/david-mccullars/aoc/enum"
 	"github.com/google/go-cmp/cmp"
 )
 

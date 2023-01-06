@@ -18,7 +18,7 @@ module HasFormat
   end
 
   def parse(text)
-    parser.parse(text)
+    parser.parse(text, clazz: self)
   end
 
   private
@@ -50,10 +50,10 @@ module HasFormat
       @clazz = clazz
     end
 
-    def parse(text)
+    def parse(text, **opts)
       if text.chomp =~ /\A#{regexp}\z/
         match = Regexp.last_match
-        classify(match) or raise ArgumentError, "Parsed match can not be classified: #{match.inspect}"
+        classify(match, **opts) or raise ArgumentError, "Parsed match can not be classified: #{match.inspect}"
       end
     end
 
@@ -89,7 +89,7 @@ module HasFormat
       super(Regexp.new(regexp), clazz: clazz)
     end
 
-    def classify(match)
+    def classify(match, clazz: @clazz)
       return nil if match.nil?
       values = @fields.map do |name, type|
         value = match["#{@clazz&.name}:#{name}"]
@@ -98,12 +98,12 @@ module HasFormat
       return nil if values.none?
 
       values = @fields.keys.zip(values).to_h
-      if @clazz.nil?
+      if clazz.nil?
         values
-      elsif @clazz < Struct
-        @clazz.new(*values.values_at(*@clazz.members))
+      elsif clazz < Struct
+        clazz.new(*values.values_at(*clazz.members))
       else
-        @clazz.allocate.tap do |obj|
+        clazz.allocate.tap do |obj|
           values.each do |k, v|
             obj.instance_variable_set("@#{k}", v)
           end
@@ -130,9 +130,9 @@ module HasFormat
       UnionParser.new(*@classes, other, clazz: @clazz)
     end
 
-    def classify(match)
+    def classify(match, **opts)
       @parsers.lazy.filter_map do |parser|
-        parser.classify(match)
+        parser.classify(match, **opts)
       end.first
     end
 
@@ -156,19 +156,20 @@ module HasFormat
       super(@nested.regexp, **opts)
     end
 
-    def parse(text)
+    def parse(text, **opts)
       data = []
       text.chomp.scan(Regexp.union(regexp, /(?<UNEXPECTED>\S.{0,40})/)) do
         match = Regexp.last_match
         raise "Unexpected text encountered: #{match[:UNEXPECTED]}..." if match[:UNEXPECTED]
-        parsed = classify(match) or raise "Parsed match can not be classified: #{match.inspect}"
+        parsed = classify(match, **opts) or raise "Parsed match can not be classified: #{match.inspect}"
         data << parsed
       end
-      @clazz ? @clazz.new(data) : data
+      clazz = opts[:clazz] || @clazz
+      clazz ? clazz.new(data) : data
     end
 
-    def classify(match)
-      @nested.classify(match)
+    def classify(match, **opts)
+      @nested.classify(match) # Don't pass options to nested parser
     end
 
   end

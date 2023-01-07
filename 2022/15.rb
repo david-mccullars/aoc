@@ -1,6 +1,5 @@
 require_relative '../solve'
 require 'facets'
-require 'parallel'
 
 EXAMPLE = <<-END
 Sensor at x=2, y=18: closest beacon is at x=-2, y=15
@@ -27,7 +26,7 @@ class BeaconExclusionZone
     end.to_h
     @beacons = pairs.values.uniq
     @sensors = pairs.map do |sensor, beacon|
-      [sensor, md(sensor, beacon)]
+      [sensor, manhattan(sensor, beacon)]
     end.to_h
 
     @is_example = @sensors.size < 20
@@ -35,66 +34,38 @@ class BeaconExclusionZone
     @max_scan_range = @is_example ? 20 : 4000000
   end
 
+  def manhattan(a, b)
+    (a.first - b.first).abs + (a.last - b.last).abs
+  end
+
   def scan_interesting_row
     beacons_on_row = @beacons.count { |_, y| y == @interesting_row }
 
-    ranges = Parallel.map(@sensors, progress: !@is_example) do |sensor, beacon_distance|
-      boundary_around(sensor, beacon_distance).filter_map do |x, y|
-        x if y == @interesting_row
-      end.then do |x1, x2|
-        Range.new(x1, x2) if x1 && x2
-      end
-    end.compact
+    ranges = @sensors.filter_map do |sensor, beacon_distance|
+      distance = beacon_distance - (@interesting_row - sensor[1]).abs
+      (sensor[0] - distance .. sensor[0] + distance) if distance >= 0
+    end
 
     Range.combine(*ranges).map(&:size).sum - beacons_on_row
   end
 
   def find_distress_signal
-    Parallel.map(@sensors, progress: !@is_example) do |sensor, beacon_distance|
-      # Consider locations one distance further than its beacon
-      scan_distance = beacon_distance + 1
-      boundary_around(sensor, scan_distance).detect do |candidate|
-        within_signal_range?(candidate) && hidden_from_sensors?(candidate)
-      end&.then do |found|
-        raise Parallel::Break, found
-      end
+    x = Z3::Int("x")
+    y = Z3::Int("y")
+    signal = [x, y]
+    solver = Z3::Solver.new
+
+    @sensors.each do |sensor, beacon_distance|
+      signal_distance = manhattan(signal, sensor)
+      solver.assert(signal_distance > beacon_distance)
     end
-  end
+    solver.assert(x >= 0)
+    solver.assert(x <= @max_scan_range)
+    solver.assert(y >= 0)
+    solver.assert(y <= @max_scan_range)
 
-  def within_signal_range?(position)
-    position.all? { |v| v >= 0 && v <= @max_scan_range }
-  end
-
-  def hidden_from_sensors?(position)
-    @sensors.none? do |sensor, beacon_distance|
-      md(sensor, position) <= beacon_distance
-    end
-  end
-
-  def boundary_around(sensor, d)
-    sx, sy = sensor
-    Enumerator.new do |e|
-      d.times do |dy|
-        [sx - d + dy, sx + d - dy].each do |cx|
-          [sy - dy, sy + dy].each do |cy|
-            e << [cx, cy]
-          end
-        end
-      end
-    end
-  end
-
-  def count_row(y)
-    @ranges[y].map(&:size).sum + 1
-  end
-
-  def md(a, b)
-    (a.first - b.first).abs + (a.last - b.last).abs
-  end
-
-  def first
-    y = @sensors.size == 14 ? 10 : 2000000
-    count_row(y)
+    abort "Solution can't be found" unless solver.satisfiable?
+    solver.model.map { |n, v| v.to_i }
   end
 
   def distress_signal_tuning_frequency

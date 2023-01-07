@@ -15,3 +15,4 @@ gem 'progressbar', require: false
 gem 'ruby-progressbar', require: false
 gem 'chunky_png', require: false
 gem 'pry'
+gem 'z3'

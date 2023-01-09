@@ -32,8 +32,10 @@ module HasFormat
     when Array
       raise ArgumentError, "Only arrays of size one are currently supported" if any.size != 1
       @parser = ArrayParser.new(any.first, **opts)
-    when String, Regexp
+    when Regexp
       @parser = RegexpParser.new(any, **opts)
+    when String
+      @parser = PatternParser.new(any, **opts)
     else
       raise ArgumentError, "Unsupported format argument: #{any.inspect}"
     end
@@ -62,6 +64,31 @@ module HasFormat
   #########################################################################
 
   class RegexpParser < Parser
+
+    def classify(match, clazz: @clazz)
+      return nil if match.nil?
+      values = match.named_captures.transform_keys(&:to_sym)
+      return nil if values.none?
+
+      if clazz.nil?
+        values
+      elsif clazz < Struct
+        clazz.new(*values.values_at(*clazz.members))
+      else
+        clazz.allocate.tap do |obj|
+          values.each do |k, v|
+            obj.instance_variable_set("@#{k}", v)
+          end
+          obj.send(:initialize)
+        end
+      end
+    end
+
+  end
+
+  #########################################################################
+
+  class PatternParser < Parser
 
     TYPE_REGEXP_MAPPING = {
        i:    /\d+/,
@@ -148,8 +175,10 @@ module HasFormat
         @nested = nested.parser
       when Parser
         @nested = nested
-      when String, Regexp
+      when Regexp
         @nested = RegexpParser.new(nested)
+      when String
+        @nested = PatternParser.new(nested)
       else
         raise ArgumentError, "ArrayParser must accept HasFormat or another Parser"
       end

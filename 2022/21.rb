@@ -19,89 +19,53 @@ drzm: hmdt - zczc
 hmdt: 32
 END
 
-class Hash
+class MonkeyMath
 
-  include TSort
-  alias tsort_each_node each_key
-
-  def tsort_each_child(node)
-    m1, _, m2 = fetch(node)
-    if m1 && m2
-      yield m1
-      yield m2
+  def initialize(lines)
+    @assertions = lines.filter_map do |line|
+      assertion(*line.split(/:? /))
     end
+  end
+
+  def monkey(name)
+    Z3::Int(name)
+  end
+
+  def assertion(name, m1, op = nil, m2 = nil)
+    if m1 && m2
+      monkey(name) == monkey(m1).send(op, monkey(m2))
+    else
+      monkey(name) == m1.to_i
+    end
+  end
+
+  def solve(value)
+    solver = Z3::Optimize.new
+    @assertions.each { solver.assert(_1) }
+    solver.model[monkey(value)].to_i if solver.satisfiable?
   end
 
 end
 
-class MonkeyMath
+class FixedMonkeyMath < MonkeyMath
 
-  def initialize(lines)
-    @jobs = {}
-
-    lines.each do |line|
-      case line
-      when /^(....): (\d+)$/    
-        @jobs[$1] = $2.to_i
-      when /^(....): (....) (.) (....)$/
-        @jobs[$1] = [$2, $3, $4]
-      end
-    end
-  end
-
-  def root
-    @root ||= yells.fetch("root")
-  end
-
-  def yells
-    @jobs.tsort.each_with_object({}) do |monkey, h|
-      m1, op, m2 = @jobs.fetch(monkey)
-      if m1 && m2
-        y1, y2 = h.values_at(m1, m2)
-        if y1.is_a?(Integer) && y2.is_a?(Integer)
-          h[monkey] = y1.send(op, y2)
-        else
-          h[monkey] = [y1, op, y2]
-        end
-      else
-        h[monkey] = m1
-      end
-    end
-  end
-
-  def handle_mistranslation
-    @jobs['humn'] = :human
-    solve(root[0], root[2])
-  end
-
-  def solve(left, right)
-    loop do
-      left, right = simplify(left, right)
-      return right if left == :human
-    end
-  end
-
-  def simplify(left, right)
-    (a, op, b) = left
-    aint = a.is_a?(Integer)
-    case op
-    when '+'
-      aint ? [b, right - a] : [a, right - b]
-    when '-'
-      aint ? [b, a - right] : [a, b + right]
-    when '*'
-      aint ? [b, right / a] : [a, right / b]
-    when '/'
-      aint ? [b, a / right] : [a, b * right]
+  def assertion(name, m1, op = nil, m2 = nil)
+    case name
+    when 'humn'
+      # ignore
+    when 'root'
+      monkey(m1) == monkey(m2)
+    else
+      super
     end
   end
 
 end
 
 solve_with(MonkeyMath, EXAMPLE => 152) do |math|
-  math.root
+  math.solve('root')
 end
 
-solve_with(MonkeyMath, EXAMPLE => 301) do |math|
-  math.handle_mistranslation
+solve_with(FixedMonkeyMath, EXAMPLE => 301) do |math|
+  math.solve('humn')
 end

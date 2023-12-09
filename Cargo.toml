@@ -3,6 +3,10 @@ name = "adventofcode"
 version = "0.1.0"
 edition = "2021"
 
+[dependencies]
+phf = { version = "0.11", features = ["macros"] }
+regex = "1.10.2"
+
 [[bin]]
 name="2023-1a"
 path = "2023/01a.rs"
@@ -11,6 +15,172 @@ path = "2023/01a.rs"
 name="2023-1b"
 path = "2023/01b.rs"
 
-[dependencies]
-phf = { version = "0.11", features = ["macros"] }
-regex = "1.10.2"
+[[bin]]
+name="2023-2a"
+path = "2023/02a.rs"
+
+[[bin]]
+name="2023-2b"
+path = "2023/02b.rs"
+
+#[[bin]]
+#name="2023-3a"
+#path = "2023/03a.rs"
+
+#[[bin]]
+#name="2023-3b"
+#path = "2023/03b.rs"
+#[[bin]]
+#name="2023-4a"
+#path = "2023/04a.rs"
+
+#[[bin]]
+#name="2023-4b"
+#path = "2023/04b.rs"
+#[[bin]]
+#name="2023-5a"
+#path = "2023/05a.rs"
+
+#[[bin]]
+#name="2023-5b"
+#path = "2023/05b.rs"
+#[[bin]]
+#name="2023-6a"
+#path = "2023/06a.rs"
+
+#[[bin]]
+#name="2023-6b"
+#path = "2023/06b.rs"
+#[[bin]]
+#name="2023-7a"
+#path = "2023/07a.rs"
+
+#[[bin]]
+#name="2023-7b"
+#path = "2023/07b.rs"
+#[[bin]]
+#name="2023-8a"
+#path = "2023/08a.rs"
+
+#[[bin]]
+#name="2023-8b"
+#path = "2023/08b.rs"
+#[[bin]]
+#name="2023-9a"
+#path = "2023/09a.rs"
+
+#[[bin]]
+#name="2023-9b"
+#path = "2023/09b.rs"
+#[[bin]]
+#name="2023-10a"
+#path = "2023/10a.rs"
+
+#[[bin]]
+#name="2023-10b"
+#path = "2023/10b.rs"
+#[[bin]]
+#name="2023-11a"
+#path = "2023/11a.rs"
+
+#[[bin]]
+#name="2023-11b"
+#path = "2023/11b.rs"
+#[[bin]]
+#name="2023-12a"
+#path = "2023/12a.rs"
+
+#[[bin]]
+#name="2023-12b"
+#path = "2023/12b.rs"
+#[[bin]]
+#name="2023-13a"
+#path = "2023/13a.rs"
+
+#[[bin]]
+#name="2023-13b"
+#path = "2023/13b.rs"
+#[[bin]]
+#name="2023-14a"
+#path = "2023/14a.rs"
+
+#[[bin]]
+#name="2023-14b"
+#path = "2023/14b.rs"
+#[[bin]]
+#name="2023-15a"
+#path = "2023/15a.rs"
+
+#[[bin]]
+#name="2023-15b"
+#path = "2023/15b.rs"
+#[[bin]]
+#name="2023-16a"
+#path = "2023/16a.rs"
+
+#[[bin]]
+#name="2023-16b"
+#path = "2023/16b.rs"
+#[[bin]]
+#name="2023-17a"
+#path = "2023/17a.rs"
+
+#[[bin]]
+#name="2023-17b"
+#path = "2023/17b.rs"
+#[[bin]]
+#name="2023-18a"
+#path = "2023/18a.rs"
+
+#[[bin]]
+#name="2023-18b"
+#path = "2023/18b.rs"
+#[[bin]]
+#name="2023-19a"
+#path = "2023/19a.rs"
+
+#[[bin]]
+#name="2023-19b"
+#path = "2023/19b.rs"
+#[[bin]]
+#name="2023-20a"
+#path = "2023/20a.rs"
+
+#[[bin]]
+#name="2023-20b"
+#path = "2023/20b.rs"
+#[[bin]]
+#name="2023-21a"
+#path = "2023/21a.rs"
+
+#[[bin]]
+#name="2023-21b"
+#path = "2023/21b.rs"
+#[[bin]]
+#name="2023-22a"
+#path = "2023/22a.rs"
+
+#[[bin]]
+#name="2023-22b"
+#path = "2023/22b.rs"
+#[[bin]]
+#name="2023-23a"
+#path = "2023/23a.rs"
+
+#[[bin]]
+#name="2023-23b"
+#path = "2023/23b.rs"
+#[[bin]]
+#name="2023-24a"
+#path = "2023/24a.rs"
+
+#[[bin]]
+#name="2023-24b"
+#path = "2023/24b.rs"
+#[[bin]]
+#name="2023-25a"
+#path = "2023/25a.rs"
+
+#[[bin]]
+#name="2023-25b"
+#path = "2023/25b.rs"

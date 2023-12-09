@@ -23,13 +23,14 @@ path = "2023/02a.rs"
 name="2023-2b"
 path = "2023/02b.rs"
 
-#[[bin]]
-#name="2023-3a"
-#path = "2023/03a.rs"
+[[bin]]
+name="2023-3a"
+path = "2023/03a.rs"
 
-#[[bin]]
-#name="2023-3b"
-#path = "2023/03b.rs"
+[[bin]]
+name="2023-3b"
+path = "2023/03b.rs"
+
 #[[bin]]
 #name="2023-4a"
 #path = "2023/04a.rs"

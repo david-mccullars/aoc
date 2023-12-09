@@ -6,6 +6,7 @@ version = 3
 name = "adventofcode"
 version = "0.1.0"
 dependencies = [
+ "array_tool",
  "phf",
  "regex",
 ]
@@ -18,6 +19,12 @@ checksum = "b2969dcb958b36655471fc61f7e416fa76033bdd4bfed0678d8fee1e2d07a1f0"
 dependencies = [
  "memchr",
 ]
+
+[[package]]
+name = "array_tool"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f8cb5d814eb646a863c4f24978cff2880c4be96ad8cde2c0f0678732902e271"
 
 [[package]]
 name = "memchr"

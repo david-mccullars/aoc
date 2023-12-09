@@ -1,4 +1,4 @@
-use regex::Regex;
+use regex::{Captures, Regex};
 use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -62,4 +62,28 @@ pub fn input_lines_mapped<T: std::str::FromStr + Clone>(example: &str, default_v
 #[allow(dead_code)]
 pub fn input_lines_u32(example: &str) -> Vec<u32> {
     input_lines_mapped(example, 0)
+}
+
+#[allow(dead_code)]
+pub fn str_to_vec<T: std::str::FromStr + Clone>(s: &str) -> Vec<T> {
+    s.split_whitespace().map(|s|
+        match s.parse() {
+            Ok(val) => val,
+            Err(_) => {
+                eprintln!("Failed to parse string: {}", s);
+                std::process::exit(1);
+            },
+        }
+    ).collect()
+}
+
+#[allow(dead_code)]
+pub fn capture_to_vec<T: std::str::FromStr + Clone>(captures: &Captures, group: usize) -> Vec<T> {
+    match captures.get(group) {
+        Some(val) => str_to_vec(val.as_str()),
+        None => {
+            eprintln!("No such capture group: {:?}", captures);
+            std::process::exit(1);
+        },
+    }
 }

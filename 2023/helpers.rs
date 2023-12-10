@@ -1,7 +1,10 @@
 use regex::{Captures, Regex};
 use std::env;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
+use num::Num;
+use std::fmt::Debug;
+use std::fmt::Display;
 
 fn input_file() -> String {
     let mut args = env::args();
@@ -11,6 +14,32 @@ fn input_file() -> String {
     let cap = re.captures(bin.as_str()).unwrap();
 
     format!("inputs/{}/{}.txt", cap.get(1).unwrap().as_str(), cap.get(2).unwrap().as_str())
+}
+
+#[allow(dead_code)]
+pub fn input(example: &str) -> String {
+    let mut args = env::args();
+    if args.nth(1).unwrap_or("".to_string()) == "-t" {
+        return example.trim().to_string()
+    }
+
+    let input_file = input_file();
+
+    /*
+    let file = File::open(&input_file);
+    let file = match file {
+        Ok(f) => f,
+        Err(_) => {
+            eprintln!("Failed to open input file {}", &input_file);
+            std::process::exit(1);
+        }
+    };
+    */
+
+    fs::read_to_string(&input_file).unwrap_or_else(|e| {
+        eprintln!("Failed to read input file {} ({})", &input_file, e);
+        std::process::exit(1);
+    })
 }
 
 #[allow(dead_code)]
@@ -86,4 +115,70 @@ pub fn capture_to_vec<T: std::str::FromStr + Clone>(captures: &Captures, group: 
             std::process::exit(1);
         },
     }
+}
+
+// xs:      🟩🟩🟩        🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧              🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥                  
+// ys[0]:                                                 ⬜⬜⬜⬜⬜                                          
+//          🟩🟩🟩        🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧              🟥🟥🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦                  
+// ys[1]:                                                                           ⬜⬜⬜⬜⬜⬜⬜⬜⬜   
+//          🟩🟩🟩        🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧              🟥🟥🟦🟦🟦🟦🟦🟦🟦🟦🟪🟪🟪🟪                  
+// ys[2]:                                                                                            ⬜⬜  
+//          🟩🟩🟩        🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧              🟥🟥🟦🟦🟦🟦🟦🟦🟦🟦🟪🟪🟪🟪
+// ys[3]:                 ⬜                                                                       
+//          🟩🟩🟩        🟧🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫              🟥🟥🟦🟦🟦🟦🟦🟦🟦🟦🟪🟪🟪🟪
+// ys[4]:                             ⬜⬜⬜                                                                       
+//          🟩🟩🟩        🟧🟫🟫🟫🟫🟫🟪🟪🟪🟨🟨🟨              🟥🟥🟦🟦🟦🟦🟦🟦🟦🟦🟪🟪🟪🟪
+// ys[5]: ⬜⬜⬜⬜⬜⬜                                                                                        
+//          🟩🟩🟩        🟦🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪              🟥🟥🟦🟦🟦🟦🟦🟦🟦🟦🟪🟪🟪🟪
+#[allow(dead_code)]
+pub fn range_split<T: Num + Ord + Copy + Debug + Display>(xs: Vec<(T, T)>, ys: Vec<(T, T)>) -> Vec<(T, T)> {
+    let mut changed = xs;
+    for y in ys {
+        changed = changed.iter().flat_map(|x| range_split1(&x, &y)).collect();
+        //println!("CHANGED {:?}   |   {:?}", y, changed);
+    }
+    changed
+}
+
+#[allow(dead_code)]
+#[inline]
+pub fn range_split1<T: Num + Ord + Copy + Display>(x: &(T, T), y: &(T, T)) -> Vec<(T, T)> {
+    //     |  x  |                      |  x  |
+    //              |  y  |         |     y       |
+    //     |     |                      |     |
+    if (x.1 <= y.0 || y.1 <= x.0) || (y.0 <= x.0 && x.1 <= y.1) {
+        //println!("A: {:?} | {:?} | {:?} | {:?}", x.1 < y.0, y.1 <= x.0, y.0 <= x.0, x.1 <= y.1);
+        vec!(*x)
+
+    //     |      x      |
+    //         |  y  |
+    //     |   |     |   |
+    } else if x.0 < y.0 && y.1 < x.1 {
+        //println!("B");
+        vec!((x.0, y.0), (y.0, y.1), (y.1, x.1))
+
+    //     |  x  |
+    //  |  y  |
+    //     |  |  |
+    } else if y.0 <= x.0 {
+        //println!("C");
+        vec!((x.0, y.1), (y.1, x.1))
+
+    //     |  x  |
+    //        |  y  |
+    //     |  |  |
+    } else if x.0 <= y.0 {
+        //println!("D");
+        vec!((x.0, y.0), (y.0, x.1))
+
+    } else {
+        eprintln!("Unexpected ranges: ({}, {}) and ({}, {})", x.0, x.1, y.0, y.1);
+        std::process::exit(1);
+    }
+}
+
+#[allow(dead_code)]
+#[inline]
+pub fn range_overlap1<T: Num + Ord + Copy + Display>(x: &(T, T), y: &(T, T)) -> bool {
+    x.0 < y.1 && y.0 < x.1
 }

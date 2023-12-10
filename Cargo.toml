@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 array_tool = "1.0.3"
+num = "0.4.1"
 phf = { version = "0.11", features = ["macros"] }
 regex = "1.10.2"
 
@@ -40,13 +41,13 @@ path = "2023/04a.rs"
 name="2023-4b"
 path = "2023/04b.rs"
 
-#[[bin]]
-#name="2023-5a"
-#path = "2023/05a.rs"
+[[bin]]
+name="2023-5a"
+path = "2023/05a.rs"
 
-#[[bin]]
-#name="2023-5b"
-#path = "2023/05b.rs"
+[[bin]]
+name="2023-5b"
+path = "2023/05b.rs"
 
 #[[bin]]
 #name="2023-6a"

@@ -6,6 +6,15 @@ use num::Num;
 use std::fmt::Debug;
 use std::fmt::Display;
 
+#[macro_export]
+macro_rules! regex {
+    ($name:ident, $e:expr) => {
+        lazy_static::lazy_static! {
+            static ref $name: Regex = Regex::new($e).unwrap();
+        }
+    };
+}
+
 fn input_file() -> String {
     let mut args = env::args();
 

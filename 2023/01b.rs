@@ -1,8 +1,10 @@
 mod helpers;
 
-use regex::Regex;
 use phf::phf_map;
 use crate::helpers::*;
+
+regex!(RE_FIRST, "(\\d|one|two|three|four|five|six|seven|eight|nine)");
+regex!(RE_LAST, ".*(\\d|one|two|three|four|five|six|seven|eight|nine)");
 
 static NUMBER_NAMES: phf::Map<&'static str, u32> = phf_map! {
     "one" => 1,
@@ -25,21 +27,16 @@ fn find_num(line: &String, re: &Regex) -> u32 {
 	}
 }
 
+fn parse(line: &String) -> u32 {
+		let n1 = find_num(&line, &RE_FIRST);
+		let n2 = find_num(&line, &RE_LAST);
+		n1 * 10 + n2
+}
+
 fn main() {
-	let lines = input_lines(EXAMPLE);
-
-    let re_first = Regex::new("(\\d|one|two|three|four|five|six|seven|eight|nine)").unwrap();
-    let re_last = Regex::new(".*(\\d|one|two|three|four|five|six|seven|eight|nine)").unwrap();
-
-    let numbers: Vec<u32> = lines.iter().map(|line| {
-		let n1 = find_num(&line, &re_first);
-		let n2 = find_num(&line, &re_last);
-
-        n1 * 10 + n2
-    }).collect();
-
-    let result: u32 = numbers.iter().sum();
-	println!("{}", result);
+    let lines = input_lines(EXAMPLE);
+    let sum: u32 = lines.iter().map(parse).sum();
+    println!("{}", sum);
 }
 
 const EXAMPLE: &str = "

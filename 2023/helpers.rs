@@ -182,3 +182,12 @@ pub fn range_split1<T: Num + Ord + Copy + Display>(x: &(T, T), y: &(T, T)) -> Ve
 pub fn range_overlap1<T: Num + Ord + Copy + Display>(x: &(T, T), y: &(T, T)) -> bool {
     x.0 < y.1 && y.0 < x.1
 }
+
+#[allow(dead_code)]
+pub fn transpose<T: Copy>(data: &Vec<Vec<T>>) -> Vec<Vec<T>> {
+    let rows = data.len();
+    let cols = data[0].len();
+    (0..cols).map(|col|
+        (0..rows).map(|row| data[row][col]).collect()
+    ).collect()
+}

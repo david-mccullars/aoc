@@ -11,30 +11,36 @@ fn manhattan_distance(p1: Pos, p2: Pos) -> usize {
     d1 + d2
 }
 
+const EXPANSION: usize = 2 - 1; // 2x
+
 fn main() {
 	let lines = input_lines(EXAMPLE);
 
-    let mut rows: Vec<Vec<bool>> = vec!();
-    for line in lines {
+    let map: Vec<Vec<bool>> = lines.iter().map(|line| {
         let row: Vec<bool> = line.chars().map(|c| c == '#').collect();
-        if !row.iter().any(|g| *g) {
-            rows.push(row.clone());
-        }
-        rows.push(row);
-    }
-    let mut cols: Vec<Vec<bool>> = vec!();
-    for col in transpose(rows) {
-        if !col.iter().any(|g| *g) {
-            cols.push(col.clone());
-        }
-        cols.push(col);
-    }
+        row
+    }).collect();
+
+    let empty_rows: Vec<usize> = map.iter().enumerate().filter(|(pos, row)|
+        !row.iter().any(|g| *g)
+    ).map(|(pos, _)| pos).collect();
+    let empty_cols: Vec<usize> = transpose(&map).iter().enumerate().filter(|(pos, col)|
+        !col.iter().any(|g| *g)
+    ).map(|(pos, _)| pos).collect();
 
     let mut galaxies: Vec<Pos> = vec!();
-    for (row, gs) in transpose(cols).iter().enumerate() {
+    let mut expanded_row = 0;
+    for (row, gs) in map.iter().enumerate() {
+        if empty_rows.contains(&row) {
+            expanded_row += 1;
+        }
+        let mut expanded_col = 0;
         for (col, g) in gs.iter().enumerate() {
+            if empty_cols.contains(&col) {
+                expanded_col += 1;
+            }
             if *g {
-                galaxies.push((row, col))
+                galaxies.push((row + EXPANSION * expanded_row, col + EXPANSION * expanded_col))
             }
         }
     }
@@ -43,7 +49,6 @@ fn main() {
     let result = galaxies.into_iter().combinations(2).fold(0, |n, pair| {
         let g1 = pair[0];
         let g2 = pair[1];
-        //println!("{} | {:?} to {:?}\t{}", step, g1, g2, manhattan_distance(g1, g2));
         step += 1;
         n + manhattan_distance(g1, g2)
     });

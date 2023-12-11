@@ -11,7 +11,7 @@ fn manhattan_distance(p1: Pos, p2: Pos) -> usize {
     d1 + d2
 }
 
-const EXPANSION: usize = 1_000_000 - 1;
+const EXPANSION: usize = 1_000_000 - 1; // 1 million x
 
 fn main() {
 	let lines = input_lines(EXAMPLE);

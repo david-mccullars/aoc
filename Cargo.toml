@@ -82,13 +82,13 @@ path = "2023/09a.rs"
 name="2023-9b"
 path = "2023/09b.rs"
 
-#[[bin]]
-#name="2023-10a"
-#path = "2023/10a.rs"
+[[bin]]
+name="2023-10a"
+path = "2023/10a.rs"
 
-#[[bin]]
-#name="2023-10b"
-#path = "2023/10b.rs"
+[[bin]]
+name="2023-10b"
+path = "2023/10b.rs"
 
 #[[bin]]
 #name="2023-11a"

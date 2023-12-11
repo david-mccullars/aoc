@@ -6,11 +6,11 @@ use regex::Regex;
 
 regex!(
     RE_FIRST,
-    "(\\d|one|two|three|four|five|six|seven|eight|nine)"
+    r"(\d|one|two|three|four|five|six|seven|eight|nine)"
 );
 regex!(
     RE_LAST,
-    ".*(\\d|one|two|three|four|five|six|seven|eight|nine)"
+    r".*(\d|one|two|three|four|five|six|seven|eight|nine)"
 );
 
 static NUMBER_NAMES: phf::Map<&'static str, u32> = phf_map! {

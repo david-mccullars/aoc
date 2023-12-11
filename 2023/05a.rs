@@ -1,16 +1,15 @@
 mod helpers;
 
 use crate::helpers::*;
-use regex::*;
+
+regex!(RE_SEEDS, r"seeds: ([0-9 ]+)");
+regex!(RE_MAPS, r"(\S+)-to-(\S+) map:\s+([0-9\s]+)");
 
 fn main() {
     let input = input(EXAMPLE);
 
-    let re_seeds = Regex::new(r"seeds: ([0-9 ]+)").unwrap();
-    let re_maps = Regex::new(r"(\S+)-to-(\S+) map:\s+([0-9\s]+)").unwrap();
-
-    let mut ids: Vec<u64> = capture_to_vec(&re_seeds.captures(input.as_str()).unwrap(), 1);
-    for cap in re_maps.captures_iter(input.as_str()) {
+    let mut ids: Vec<u64> = capture_to_vec(&RE_SEEDS.captures(input.as_str()).unwrap(), 1);
+    for cap in RE_MAPS.captures_iter(input.as_str()) {
         let (_, [_, _, data]) = cap.extract();
         let maps: Vec<(u64, u64, i64)> = str_to_vec::<u64>(data)
             .chunks(3)

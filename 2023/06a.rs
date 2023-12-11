@@ -1,16 +1,15 @@
 mod helpers;
 
 use crate::helpers::*;
-use regex::*;
+
+regex!(RE_TIME, r"Time:\s+(.*)");
+regex!(RE_DIST, r"Distance:\s+(.*)");
 
 fn main() {
     let input = input(EXAMPLE);
 
-    let re1 = Regex::new(r"Time:\s+(.*)").unwrap();
-    let re2 = Regex::new(r"Distance:\s+(.*)").unwrap();
-
-    let times: Vec<u32> = capture_to_vec(&re1.captures(input.as_str()).unwrap(), 1);
-    let dist: Vec<u32> = capture_to_vec(&re2.captures(input.as_str()).unwrap(), 1);
+    let times: Vec<u32> = capture_to_vec(&RE_TIME.captures(input.as_str()).unwrap(), 1);
+    let dist: Vec<u32> = capture_to_vec(&RE_DIST.captures(input.as_str()).unwrap(), 1);
 
     let races: Vec<(&u32, &u32)> = times.iter().zip(dist.iter()).collect();
 

@@ -1,8 +1,9 @@
 mod helpers;
 
 use crate::helpers::*;
-use regex::*;
 use std::collections::HashMap;
+
+regex!(RE, r"(...) = \((...), (...)\)");
 
 fn to_id(s: &str) -> u16 {
     s.chars()
@@ -13,11 +14,9 @@ fn main() {
     let lines = input_lines(EXAMPLE);
     let directions: Vec<char> = lines[0].chars().collect();
 
-    let re = Regex::new(r"(...) = \((...), (...)\)").unwrap();
-
     let mut instructions: HashMap<u16, (u16, u16)> = HashMap::new();
     for line in lines[2..].to_vec() {
-        let (_, [id, left, right]) = re.captures(line.as_str()).unwrap().extract();
+        let (_, [id, left, right]) = RE.captures(line.as_str()).unwrap().extract();
         instructions.insert(to_id(id), (to_id(left), to_id(right)));
     }
 

@@ -1,15 +1,14 @@
 mod helpers;
 
 use crate::helpers::*;
-use regex::Regex;
 use std::ops::Range;
+
+regex!(RE_NUM, r"\d+");
+regex!(RE_SYM, r"[*]");
 
 fn main() {
     let mut lines = input_lines(EXAMPLE);
     lines.push("".to_string());
-
-    let re_num = Regex::new("\\d+").unwrap();
-    let re_sym = Regex::new("[*]").unwrap();
 
     let mut line2: String;
     let mut line3 = "".to_string();
@@ -25,7 +24,7 @@ fn main() {
 
         num1 = num2;
         num2 = num3;
-        num3 = re_num
+        num3 = RE_NUM
             .find_iter(line3.as_str())
             .map(|m| {
                 let n: u32 = m.as_str().parse().unwrap();
@@ -35,7 +34,7 @@ fn main() {
             })
             .collect();
 
-        for m in re_sym.find_iter(line2.as_str()) {
+        for m in RE_SYM.find_iter(line2.as_str()) {
             let s = m.start() as i32;
             let mut adj: Vec<u32> = [].to_vec();
 

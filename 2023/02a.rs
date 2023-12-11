@@ -34,11 +34,12 @@ impl Rgb {
     }
 }
 
+regex!(RE_GAME, r"^Game (\d+): (.*)");
+regex!(RE_COLOR, r"(\d+) (blue|red|green)");
+
 fn main() {
     let lines = input_lines(EXAMPLE);
 
-    let re_game = Regex::new("^Game (\\d+): (.*)").unwrap();
-    let re_color = Regex::new("(\\d+) (blue|red|green)").unwrap();
     let possible = Rgb {
         r: 12,
         g: 13,
@@ -47,8 +48,8 @@ fn main() {
 
     let mut sum = 0;
     for line in lines {
-        let (_, [id, games]) = re_game.captures(line.as_str()).unwrap().extract();
-        let sets: Vec<Rgb> = games.split("; ").map(|g| Rgb::new(g, &re_color)).collect();
+        let (_, [id, games]) = RE_GAME.captures(line.as_str()).unwrap().extract();
+        let sets: Vec<Rgb> = games.split("; ").map(|g| Rgb::new(g, &RE_COLOR)).collect();
         let all_possible = sets.iter().all(|&set| set.is_less_or_equal(&possible));
         if all_possible {
             sum += id.parse::<u32>().unwrap();

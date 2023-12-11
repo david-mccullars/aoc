@@ -2,16 +2,15 @@ mod helpers;
 
 use crate::helpers::*;
 use array_tool::vec::Intersect;
-use regex::Regex;
+
+regex!(RE_LINE, r"Card\s+\d+:\s+(.*?)\s+\|\s+(.*)");
 
 fn main() {
     let lines = input_lines(EXAMPLE);
 
-    let re_line = Regex::new("Card\\s+\\d+:\\s+(.*?)\\s+\\|\\s+(.*)").unwrap();
-
     let mut cards: Vec<usize> = vec![1; lines.len()];
     for (pos, line) in lines.iter().enumerate() {
-        let caps = re_line.captures(line).unwrap();
+        let caps = RE_LINE.captures(line).unwrap();
         let winning: Vec<u32> = capture_to_vec(&caps, 1);
         let mine: Vec<u32> = capture_to_vec(&caps, 2);
 

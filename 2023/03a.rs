@@ -1,14 +1,13 @@
 mod helpers;
 
 use crate::helpers::*;
-use regex::Regex;
+
+regex!(RE_NUM, r"\d+");
+regex!(RE_SYM, r"[^0-9.]");
 
 fn main() {
     let mut lines = input_lines(EXAMPLE);
     lines.push("".to_string());
-
-    let re_num = Regex::new("\\d+").unwrap();
-    let re_sym = Regex::new("[^0-9.]").unwrap();
 
     let mut line2: String;
     let mut line3 = "".to_string();
@@ -24,12 +23,12 @@ fn main() {
 
         sym1 = sym2;
         sym2 = sym3;
-        sym3 = re_sym
+        sym3 = RE_SYM
             .find_iter(line3.as_str())
             .map(|s| s.start() as i32)
             .collect();
 
-        for m in re_num.find_iter(line2.as_str()) {
+        for m in RE_NUM.find_iter(line2.as_str()) {
             let n: u32 = m.as_str().parse().unwrap();
             let mut near_sym = false;
 

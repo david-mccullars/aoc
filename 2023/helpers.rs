@@ -1,5 +1,5 @@
 use num::Num;
-use regex::{Captures, Regex};
+use regex::Captures;
 use std::env;
 use std::fmt::Debug;
 use std::fmt::Display;
@@ -10,17 +10,21 @@ use std::io::{BufRead, BufReader};
 macro_rules! regex {
     ($name:ident, $e:expr) => {
         lazy_static::lazy_static! {
-            static ref $name: regex::Regex = regex::Regex::new($e).unwrap();
+            static ref $name: regex::Regex = regex::Regex::new($e).unwrap_or_else(|e| {
+                eprintln!("Failed to parse regex: {}", e);
+                std::process::exit(1);
+            });
         }
     };
 }
 
+regex!(RE_BIN, r"/(\d{4})-(\d+)[ab]");
+
 fn input_file() -> String {
     let mut args = env::args();
 
-    let re = Regex::new("/(\\d{4})-(\\d+)[ab]").unwrap();
     let bin = args.next().unwrap();
-    let cap = re.captures(bin.as_str()).unwrap();
+    let cap = RE_BIN.captures(bin.as_str()).unwrap();
 
     format!(
         "inputs/{}/{}.txt",

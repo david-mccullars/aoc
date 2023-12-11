@@ -34,16 +34,16 @@ impl Rgb {
     }
 }
 
+regex!(RE_GAME, r"^Game (\d+): (.*)");
+regex!(RE_COLOR, r"(\d+) (blue|red|green)");
+
 fn main() {
     let lines = input_lines(EXAMPLE);
 
-    let re_game = Regex::new("^Game (\\d+): (.*)").unwrap();
-    let re_color = Regex::new("(\\d+) (blue|red|green)").unwrap();
-
     let mut sum = 0;
     for line in lines {
-        let (_, [_, games]) = re_game.captures(line.as_str()).unwrap().extract();
-        let sets: Vec<Rgb> = games.split("; ").map(|g| Rgb::new(g, &re_color)).collect();
+        let (_, [_, games]) = RE_GAME.captures(line.as_str()).unwrap().extract();
+        let sets: Vec<Rgb> = games.split("; ").map(|g| Rgb::new(g, &RE_COLOR)).collect();
         let mut max = Rgb { r: 0, g: 0, b: 0 };
         for set in sets {
             if max.r < set.r {

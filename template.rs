@@ -1,18 +1,16 @@
 mod helpers;
 
-use regex::*;
 use crate::helpers::*;
 
+regex!(RE, r"Some \d+");
+
 fn main() {
-	let lines = input_lines(EXAMPLE);
+    let lines = input_lines(EXAMPLE);
 
-    let _re = Regex::new(r"Some \d+").unwrap();
-
-    let _: Vec<_> = lines.iter().map(|_line| {
-    }).collect();
+    let _: Vec<_> = lines.iter().map(|_line| {}).collect();
 
     let result: u32 = 0;
-	println!("{}", result);
+    println!("{}", result);
 }
 
 const EXAMPLE: &str = "

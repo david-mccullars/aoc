@@ -1,11 +1,11 @@
 mod helpers;
 
+use crate::helpers::*;
 use array_tool::vec::Intersect;
 use regex::Regex;
-use crate::helpers::*;
 
 fn main() {
-	let lines = input_lines(EXAMPLE);
+    let lines = input_lines(EXAMPLE);
 
     let re_line = Regex::new("Card\\s+\\d+:\\s+(.*?)\\s+\\|\\s+(.*)").unwrap();
 
@@ -22,7 +22,7 @@ fn main() {
     }
 
     let sum: usize = cards.iter().sum();
-	println!("{}", sum);
+    println!("{}", sum);
 }
 
 const EXAMPLE: &str = "

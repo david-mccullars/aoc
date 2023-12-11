@@ -1,36 +1,39 @@
 mod helpers;
 
-use regex::*;
 use crate::helpers::*;
+use regex::*;
 
 fn main() {
-	let input = input(EXAMPLE);
+    let input = input(EXAMPLE);
 
     let re_seeds = Regex::new(r"seeds: ([0-9 ]+)").unwrap();
     let re_maps = Regex::new(r"(\S+)-to-(\S+) map:\s+([0-9\s]+)").unwrap();
 
-	let mut ids: Vec<u64> = capture_to_vec(&re_seeds.captures(input.as_str()).unwrap(), 1);
-	for cap in re_maps.captures_iter(input.as_str()) {
-		let (_, [_, _, data]) = cap.extract();
-		let maps: Vec<(u64, u64, i64)> = str_to_vec::<u64>(data).chunks(3).map(|chunk| {
-			let min = chunk[1];
-			let max = chunk[1] + chunk[2];
-			let delta = (chunk[0] as i64) - (chunk[1] as i64);
-			(min, max, delta)
-		}).collect();
+    let mut ids: Vec<u64> = capture_to_vec(&re_seeds.captures(input.as_str()).unwrap(), 1);
+    for cap in re_maps.captures_iter(input.as_str()) {
+        let (_, [_, _, data]) = cap.extract();
+        let maps: Vec<(u64, u64, i64)> = str_to_vec::<u64>(data)
+            .chunks(3)
+            .map(|chunk| {
+                let min = chunk[1];
+                let max = chunk[1] + chunk[2];
+                let delta = (chunk[0] as i64) - (chunk[1] as i64);
+                (min, max, delta)
+            })
+            .collect();
 
-		for pos in 0..ids.len() {
-			for (min, max, delta) in &maps {
-				if (*min..*max).contains(&ids[pos]) {
-					ids[pos] = ((ids[pos] as i64) + delta) as u64;
-					break;
-				}
-			}
-		}
-	}
+        for pos in 0..ids.len() {
+            for (min, max, delta) in &maps {
+                if (*min..*max).contains(&ids[pos]) {
+                    ids[pos] = ((ids[pos] as i64) + delta) as u64;
+                    break;
+                }
+            }
+        }
+    }
 
-	let result: u64 = *ids.iter().min().unwrap();
-	println!("{}", result);
+    let result: u64 = *ids.iter().min().unwrap();
+    println!("{}", result);
 }
 
 const EXAMPLE: &str = "

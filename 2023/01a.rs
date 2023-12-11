@@ -11,9 +11,9 @@ fn parse(line: &String) -> u32 {
 }
 
 fn main() {
-	  let lines = input_lines(EXAMPLE);
+    let lines = input_lines(EXAMPLE);
     let sum: u32 = lines.iter().map(parse).sum();
-	  println!("{}", sum);
+    println!("{}", sum);
 }
 
 const EXAMPLE: &str = "

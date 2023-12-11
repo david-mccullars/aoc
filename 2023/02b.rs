@@ -1,7 +1,7 @@
 mod helpers;
 
-use regex::Regex;
 use crate::helpers::*;
+use regex::Regex;
 
 #[derive(Debug, Clone, Copy)]
 struct Rgb {
@@ -12,21 +12,21 @@ struct Rgb {
 
 impl Rgb {
     fn new(s: &str, re: &Regex) -> Self {
-		let mut r = 0;
-		let mut g = 0;
-		let mut b = 0;
+        let mut r = 0;
+        let mut g = 0;
+        let mut b = 0;
 
-    	for (_, [v, c]) in re.captures_iter(s).map(|c| c.extract()) {
-			let v = v.parse::<u32>().unwrap();
-			match c {
-				"red" => { r = v },
-				"green" => { g = v },
-				"blue" => { b = v },
-				&_ => {},
-			}
-		}
+        for (_, [v, c]) in re.captures_iter(s).map(|c| c.extract()) {
+            let v = v.parse::<u32>().unwrap();
+            match c {
+                "red" => r = v,
+                "green" => g = v,
+                "blue" => b = v,
+                &_ => {}
+            }
+        }
 
-		Rgb { r, g, b }
+        Rgb { r, g, b }
     }
 
     fn power(&self) -> u32 {
@@ -35,25 +35,31 @@ impl Rgb {
 }
 
 fn main() {
-	let lines = input_lines(EXAMPLE);
+    let lines = input_lines(EXAMPLE);
 
-	let re_game = Regex::new("^Game (\\d+): (.*)").unwrap();
-	let re_color = Regex::new("(\\d+) (blue|red|green)").unwrap();
+    let re_game = Regex::new("^Game (\\d+): (.*)").unwrap();
+    let re_color = Regex::new("(\\d+) (blue|red|green)").unwrap();
 
-	let mut sum = 0;
+    let mut sum = 0;
     for line in lines {
-		let (_, [_, games]) = re_game.captures(line.as_str()).unwrap().extract();
+        let (_, [_, games]) = re_game.captures(line.as_str()).unwrap().extract();
         let sets: Vec<Rgb> = games.split("; ").map(|g| Rgb::new(g, &re_color)).collect();
         let mut max = Rgb { r: 0, g: 0, b: 0 };
-		for set in sets {
-            if max.r < set.r { max.r = set.r }
-            if max.g < set.g { max.g = set.g }
-            if max.b < set.b { max.b = set.b }
+        for set in sets {
+            if max.r < set.r {
+                max.r = set.r
+            }
+            if max.g < set.g {
+                max.g = set.g
+            }
+            if max.b < set.b {
+                max.b = set.b
+            }
         }
         sum += max.power();
     }
 
-	println!("{}", sum);
+    println!("{}", sum);
 }
 
 const EXAMPLE: &str = "

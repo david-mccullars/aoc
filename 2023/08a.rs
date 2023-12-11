@@ -1,15 +1,16 @@
 mod helpers;
 
-use std::collections::HashMap;
-use regex::*;
 use crate::helpers::*;
+use regex::*;
+use std::collections::HashMap;
 
 fn to_id(s: &str) -> u16 {
-    s.chars().fold(0, |a, c| 26 * a + (c.to_ascii_lowercase() as u16) - 97)
+    s.chars()
+        .fold(0, |a, c| 26 * a + (c.to_ascii_lowercase() as u16) - 97)
 }
 
 fn main() {
-	let lines = input_lines(EXAMPLE);
+    let lines = input_lines(EXAMPLE);
     let directions: Vec<char> = lines[0].chars().collect();
 
     let re = Regex::new(r"(...) = \((...), (...)\)").unwrap();
@@ -27,7 +28,11 @@ fn main() {
     let mut step = 0;
     while pos != finish {
         let dir = directions[step % directions.len()];
-        pos = if dir == 'L' { instructions[&pos].0 } else { instructions[&pos].1 };
+        pos = if dir == 'L' {
+            instructions[&pos].0
+        } else {
+            instructions[&pos].1
+        };
         step += 1;
         if step > 100000 {
             eprintln!("Too many steps!");
@@ -35,7 +40,7 @@ fn main() {
         }
     }
 
-	println!("{}", step);
+    println!("{}", step);
 }
 
 const EXAMPLE: &str = "

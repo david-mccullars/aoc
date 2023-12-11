@@ -1,10 +1,17 @@
 mod helpers;
 
-use phf::phf_map;
 use crate::helpers::*;
+use phf::phf_map;
+use regex::Regex;
 
-regex!(RE_FIRST, "(\\d|one|two|three|four|five|six|seven|eight|nine)");
-regex!(RE_LAST, ".*(\\d|one|two|three|four|five|six|seven|eight|nine)");
+regex!(
+    RE_FIRST,
+    "(\\d|one|two|three|four|five|six|seven|eight|nine)"
+);
+regex!(
+    RE_LAST,
+    ".*(\\d|one|two|three|four|five|six|seven|eight|nine)"
+);
 
 static NUMBER_NAMES: phf::Map<&'static str, u32> = phf_map! {
     "one" => 1,
@@ -19,18 +26,18 @@ static NUMBER_NAMES: phf::Map<&'static str, u32> = phf_map! {
 };
 
 fn find_num(line: &String, re: &Regex) -> u32 {
-	let cap = re.captures(line).unwrap();
-	let n = cap.get(1).unwrap().as_str();
-	match NUMBER_NAMES.get(n) {
-		Some(v) => *v,
-		None => n.parse::<u32>().unwrap(),
-	}
+    let cap = re.captures(line).unwrap();
+    let n = cap.get(1).unwrap().as_str();
+    match NUMBER_NAMES.get(n) {
+        Some(v) => *v,
+        None => n.parse::<u32>().unwrap(),
+    }
 }
 
 fn parse(line: &String) -> u32 {
-		let n1 = find_num(&line, &RE_FIRST);
-		let n2 = find_num(&line, &RE_LAST);
-		n1 * 10 + n2
+    let n1 = find_num(&line, &RE_FIRST);
+    let n2 = find_num(&line, &RE_LAST);
+    n1 * 10 + n2
 }
 
 fn main() {

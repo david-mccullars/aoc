@@ -1,7 +1,7 @@
 mod helpers;
 
-use itertools::Itertools;
 use crate::helpers::*;
+use itertools::Itertools;
 
 fn card(c: char) -> u16 {
     match c {
@@ -29,7 +29,7 @@ fn score(cards: &Hand) -> u8 {
     sorted_cards.sort();
 
     let mut wild: u16 = 0;
-    let mut groups: Vec<u16> = vec!();
+    let mut groups: Vec<u16> = vec![];
     for (key, group) in &sorted_cards.into_iter().group_by(|c| *c) {
         let len = group.collect::<Vec<u16>>().len() as u16;
         if key == 1 {
@@ -68,21 +68,25 @@ fn score(cards: &Hand) -> u8 {
 }
 
 fn main() {
-	let lines = input_lines(EXAMPLE);
+    let lines = input_lines(EXAMPLE);
 
-    let mut hands: Vec<(u8, Hand, u32)> = lines.iter().map(|line| {
-        let line: Vec<_> = line.split_whitespace().collect();
-        let hand: Hand = line[0].chars().map(card).collect();
-        let bid: u32 = line[1].parse().unwrap();
+    let mut hands: Vec<(u8, Hand, u32)> = lines
+        .iter()
+        .map(|line| {
+            let line: Vec<_> = line.split_whitespace().collect();
+            let hand: Hand = line[0].chars().map(card).collect();
+            let bid: u32 = line[1].parse().unwrap();
 
-        (score(&hand), hand, bid)
-    }).collect();
+            (score(&hand), hand, bid)
+        })
+        .collect();
     hands.sort(); // Use the hand (in sequence) as a tie-breaker
 
-    let result: u32 = hands.iter().enumerate().fold(0, |n, (pos, (_, _, bid))|
-        n + (pos as u32 + 1) * bid
-    );
-	println!("{}", result);
+    let result: u32 = hands
+        .iter()
+        .enumerate()
+        .fold(0, |n, (pos, (_, _, bid))| n + (pos as u32 + 1) * bid);
+    println!("{}", result);
 }
 
 const EXAMPLE: &str = "

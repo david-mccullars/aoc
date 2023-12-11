@@ -1,10 +1,10 @@
 mod helpers;
 
-use regex::Regex;
 use crate::helpers::*;
+use regex::Regex;
 
 fn main() {
-	let mut lines = input_lines(EXAMPLE);
+    let mut lines = input_lines(EXAMPLE);
     lines.push("".to_string());
 
     let re_num = Regex::new("\\d+").unwrap();
@@ -24,7 +24,10 @@ fn main() {
 
         sym1 = sym2;
         sym2 = sym3;
-        sym3 = re_sym.find_iter(line3.as_str()).map(|s| s.start() as i32).collect();
+        sym3 = re_sym
+            .find_iter(line3.as_str())
+            .map(|s| s.start() as i32)
+            .collect();
 
         for m in re_num.find_iter(line2.as_str()) {
             let n: u32 = m.as_str().parse().unwrap();
@@ -48,7 +51,7 @@ fn main() {
         }
     }
 
-	println!("{}", sum);
+    println!("{}", sum);
 }
 
 const EXAMPLE: &str = "

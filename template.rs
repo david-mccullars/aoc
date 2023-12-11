@@ -6,9 +6,9 @@ use crate::helpers::*;
 fn main() {
 	let lines = input_lines(EXAMPLE);
 
-    let re = Regex::new(r"Some \d+").unwrap();
+    let _re = Regex::new(r"Some \d+").unwrap();
 
-    let _: Vec<_> = lines.iter().map(|line| {
+    let _: Vec<_> = lines.iter().map(|_line| {
     }).collect();
 
     let result: u32 = 0;

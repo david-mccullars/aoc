@@ -21,10 +21,10 @@ fn main() {
         row
     }).collect();
 
-    let empty_rows: Vec<usize> = map.iter().enumerate().filter(|(pos, row)|
+    let empty_rows: Vec<usize> = map.iter().enumerate().filter(|(_, row)|
         !row.iter().any(|g| *g)
     ).map(|(pos, _)| pos).collect();
-    let empty_cols: Vec<usize> = transpose(&map).iter().enumerate().filter(|(pos, col)|
+    let empty_cols: Vec<usize> = transpose(&map).iter().enumerate().filter(|(_, col)|
         !col.iter().any(|g| *g)
     ).map(|(pos, _)| pos).collect();
 

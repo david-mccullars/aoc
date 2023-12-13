@@ -7,6 +7,7 @@ edition = "2021"
 array_tool = "1.0.3"
 itertools = "0.12.0"
 lazy_static = "1.4.0"
+memoize = "0.4.1"
 num = "0.4.1"
 phf = { version = "0.11", features = ["macros"] }
 regex = "1.10.2"
@@ -107,13 +108,13 @@ path = "2023/12a.rs"
 name="2023-12b"
 path = "2023/12b.rs"
 
-#[[bin]]
-#name="2023-13a"
-#path = "2023/13a.rs"
+[[bin]]
+name="2023-13a"
+path = "2023/13a.rs"
 
-#[[bin]]
-#name="2023-13b"
-#path = "2023/13b.rs"
+[[bin]]
+name="2023-13b"
+path = "2023/13b.rs"
 
 #[[bin]]
 #name="2023-14a"

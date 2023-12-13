@@ -215,3 +215,14 @@ pub fn transpose<T: Copy>(data: &Vec<Vec<T>>) -> Vec<Vec<T>> {
         .map(|col| (0..rows).map(|row| data[row][col]).collect())
         .collect()
 }
+
+#[allow(dead_code)]
+pub fn transpose_text(s: &str) -> String {
+    let lines: Vec<Vec<char>> = s.lines().map(|line| line.chars().collect()).collect();
+    let transposed = transpose(&lines);
+    transposed
+        .iter()
+        .map(|line| line.iter().collect::<String>())
+        .collect::<Vec<_>>()
+        .join("\n")
+}

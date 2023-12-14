@@ -226,3 +226,31 @@ pub fn transpose_text(s: &str) -> String {
         .collect::<Vec<_>>()
         .join("\n")
 }
+
+#[allow(dead_code)]
+pub fn rotate<T: Copy>(data: &Vec<Vec<T>>) -> Vec<Vec<T>> {
+    let n = data.len();
+    let mut new_data: Vec<Vec<T>> = vec![vec![data[0][0]; n]; n];
+
+    for i in 0..n {
+        for j in 0..n {
+            new_data[j][n - i - 1] = data[i][j];
+        }
+    }
+
+    new_data
+}
+
+#[allow(dead_code)]
+pub fn rotate_mut<T: Copy>(data: &mut Vec<Vec<T>>) {
+    let n = data.len();
+    for i in 0..n / 2 {
+        for j in i..n - i - 1 {
+            let temp = data[i][j];
+            data[i][j] = data[n - j - 1][i];
+            data[n - j - 1][i] = data[n - i - 1][n - j - 1];
+            data[n - i - 1][n - j - 1] = data[j][n - i - 1];
+            data[j][n - i - 1] = temp;
+        }
+    }
+}

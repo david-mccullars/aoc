@@ -1,0 +1,3 @@
+[submodule "2023"]
+	path = 2023
+	url = https://github.com/david-mccullars/aoc-2023.git

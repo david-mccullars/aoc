@@ -1,3 +1,6 @@
 [submodule "2023"]
 	path = 2023
 	url = https://github.com/david-mccullars/aoc-2023.git
+[submodule "2019"]
+	path = 2019
+	url = https://github.com/david-mccullars/aoc-2019.git

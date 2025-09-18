@@ -10,3 +10,6 @@
 [submodule "2015"]
 	path = 2015
 	url = https://github.com/david-mccullars/aoc-2015.git
+[submodule "2016"]
+	path = 2016
+	url = https://github.com/david-mccullars/aoc-2016.git
